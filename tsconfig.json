@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "outFile": "out/app.js",
+        "moduleResolution": "node",
+        "module": "amd",
+        "target": "ES6",
+        "alwaysStrict": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noImplicitUseStrict": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "strictNullChecks": true,
+        "removeComments": true,
+        "sourceMap": true
+    },
+    "files": [
+        "client/index.ts"
+    ]
+}
