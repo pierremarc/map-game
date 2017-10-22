@@ -4,10 +4,11 @@ const e = require("express");
 const ws = require("ws");
 const Array_1 = require("fp-ts/lib/Array");
 const Option_1 = require("fp-ts/lib/Option");
-const opened = Option_1.fromPredicate((x) => x.readyState === WebSocket.OPEN);
+const opened = Option_1.fromPredicate((x) => x.readyState === ws.OPEN);
 const start = () => {
     const app = e();
-    const server = app.listen(3333, () => {
+    app.use(e.static('public'));
+    const server = app.listen(3333, '0.0.0.0', () => {
         const wss = new ws.Server({ server });
         let xs = [];
         wss.on('connection', function connection(s, _req) {

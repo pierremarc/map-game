@@ -1,0 +1,41 @@
+
+@import "./ol.css";
+@import "../node_modules/semantic-ui-icon/icon.css";
+
+.map {
+    overflow: hidden;
+}
+
+.user {
+    position: absolute;
+    top:0;
+    left:0;
+    z-index:1000;
+    width: 24px;
+    height: 24px;
+    background-color: green;
+}
+
+
+.items {
+    position: absolute;
+    z-index: 10000;
+    right: 0;
+    top: 0;
+    padding: 6px;
+    background-color: white;
+    /* width: 200px;
+    height: 200px; */
+}
+
+.item {
+    display: contents;
+    width: 24px;
+    height: 24px;
+    background-color: white;
+}
+
+.items .item:hover {
+    color: rgb(5, 136, 197)
+}
+

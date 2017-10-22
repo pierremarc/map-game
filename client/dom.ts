@@ -132,11 +132,10 @@ export const attribute =
 
 export const style =
     <T extends HTMLElement>(elem: T, attrs: Partial<CSSStyleDeclaration>) => {
-        elem.style
         Object.keys(attrs)
             .forEach((k) => {
-                // elem.style.setProperty(k, attrs[k]);
-                elem.style[k] = attrs[k];
+                elem.style.setProperty(k, attrs[k as keyof CSSStyleDeclaration]);
+                // elem.style[k] = attrs[k];
             });
         return elem;
     }
@@ -168,6 +167,8 @@ export const CANVAS = factory<HTMLCanvasElement>('canvas');
 export const IMG = factory<HTMLImageElement>('img');
 
 export const LABEL = factory<HTMLLabelElement>('label');
+
+export const I = factory<HTMLLIElement>('i');
 
 
 export const appendText = (text: string) => (node: Element) => {

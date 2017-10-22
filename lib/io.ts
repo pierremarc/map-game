@@ -46,11 +46,14 @@ export const MoveDataIO = i({
 });
 export type MoveData = io.TypeOf<typeof MoveDataIO>;
 
-const SelectDataIO = i({
+export const SelectDataIO = i({
     item: io.string,
 });
+export type SelectData = io.TypeOf<typeof SelectDataIO>;
 
-const DropDataIO = io.intersection([MoveDataIO, SelectDataIO]);
+
+export const DropDataIO = io.intersection([MoveDataIO, SelectDataIO]);
+export type DropData = io.TypeOf<typeof DropDataIO>;
 
 const WriteDataIO = i({
     content: io.string,

@@ -4,15 +4,16 @@ const { readdirSync } = require('fs');
 const webpack = require('webpack');
 
 // const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
-// const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 
 const ROOT = resolve(__dirname);
 // const NAME = basename(ROOT);
-// const ASSETS_PUBLIC_PATH = `/client/assets/${NAME}/`;
+const ASSETS_PUBLIC_PATH = `/out/`;
 const CLIENT_ENTRY_PATH = resolve(ROOT, 'client/index.ts');
-const SERVER_ENTRY_PATH = resolve(ROOT, 'server/index.ts');
-const OUTPUT_DIR = resolve(ROOT, 'out');
+// const SERVER_ENTRY_PATH = resolve(ROOT, 'server/index.ts');
+const STYLE_ENTRY_PATH = resolve(ROOT, 'style/style.js');
+const OUTPUT_DIR = resolve(ROOT, 'public/out');
 // const STYLE_ENTRY_PATH = resolve(ROOT, 'style/index.js');
 // const SDI_ALIAS_ROOT = resolve(ROOT, '../sdi/');
 // const SDI_ALIAS = {
@@ -33,7 +34,7 @@ module.exports = {
     context: ROOT,
     entry: {
         client: CLIENT_ENTRY_PATH,
-        // server: SERVER_ENTRY_PATH,
+        style: STYLE_ENTRY_PATH,
     },
 
     output: {
@@ -77,48 +78,48 @@ module.exports = {
             /**
              * Style
              */
-            // // CSS
-            // {
-            //     test: /\.css$/,
-            //     loader: ExtractTextPlugin.extract({
-            //         fallback: "style-loader",
-            //         use: "css-loader"
-            //     })
-            // },
+            // CSS
+            {
+                test: /\.css$/,
+                loader: ExtractTextPlugin.extract({
+                    fallback: "style-loader",
+                    use: "css-loader"
+                })
+            },
 
-            // // LESS
-            // {
-            //     test: /\.less$/,
-            //     loader: ExtractTextPlugin.extract({
-            //         fallback: "style-loader",
-            //         use: "css-loader!less-loader"
-            //     })
-            // },
+            // LESS
+            {
+                test: /\.less$/,
+                loader: ExtractTextPlugin.extract({
+                    fallback: "style-loader",
+                    use: "css-loader!less-loader"
+                })
+            },
 
-            // //fonts
-            // {
-            //     test: /\.(eot|svg|ttf|woff|woff2)$/,
-            //     loader: 'file-loader',
-            //     options: {
-            //         publicPath: ASSETS_PUBLIC_PATH
-            //     }
-            // },
+            //fonts
+            {
+                test: /\.(eot|svg|ttf|woff|woff2)$/,
+                loader: 'file-loader',
+                options: {
+                    publicPath: ASSETS_PUBLIC_PATH
+                }
+            },
 
-            // //images
-            // {
-            //     test: /\.(jpg|png|svg)$/,
-            //     loader: 'file-loader',
-            //     options: {
-            //         publicPath: ASSETS_PUBLIC_PATH
-            //     }
-            // }
+            //images
+            {
+                test: /\.(jpg|png|svg)$/,
+                loader: 'file-loader',
+                options: {
+                    publicPath: ASSETS_PUBLIC_PATH
+                }
+            }
         ]
     },
     // plugins: [
     //     new webpack.optimize.UglifyJsPlugin(),
     // ]
     plugins: [
-        // new ExtractTextPlugin("[name].css"),
+        new ExtractTextPlugin("[name].css"),
     ],
     devtool: 'inline-cheap-module-source-map',
     // devtool: 'eval',

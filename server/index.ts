@@ -4,12 +4,13 @@ import * as ws from 'ws';
 import { cons, filter } from "fp-ts/lib/Array";
 import { fromPredicate } from 'fp-ts/lib/Option';
 
-const opened = fromPredicate((x: ws) => x.readyState === WebSocket.OPEN);
+const opened = fromPredicate((x: ws) => x.readyState === ws.OPEN);
 
 const start =
     () => {
         const app = e();
-        const server = app.listen(3333, () => {
+        app.use(e.static('public'));
+        const server = app.listen(3333, '0.0.0.0', () => {
             const wss = new ws.Server({ server });
             let xs: ws[] = [];
 

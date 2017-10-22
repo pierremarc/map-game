@@ -4,8 +4,13 @@ import { MessageType, Message } from "../lib/io";
 export type Subscriber<A> = (e: A) => A;
 
 
+export interface StreamI<T extends MessageType> {
+    subscribe: (s: (a: Message<T>) => Message<T>) => void;
+    feed: (m: Message<T>) => Message<T>[];
+}
+
 export const createStream =
-    <T extends MessageType>() => {
+    <T extends MessageType>(): StreamI<T> => {
         type MT = Message<T>;
         const subs: Subscriber<MT>[] = [];
 

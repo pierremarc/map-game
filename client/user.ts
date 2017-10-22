@@ -56,7 +56,7 @@ export const createUsers =
                     f(getUser(id));
 
         const allDo =
-            (f: (h: HTMLElement)) => users.map(u => u.snd()).map(f);
+            (f: (h: HTMLElement) => void) => users.map(u => u.snd()).map(f);
 
         return { userDo, allDo };
     }
