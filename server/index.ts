@@ -1,33 +1,36 @@
 import * as e from 'express';
 import * as ws from 'ws';
-import { MoveMessage } from '../lib/io';
+// import { MoveMessage } from '../lib/io';
+import { cons, filter } from "fp-ts/lib/Array";
+import { fromPredicate } from 'fp-ts/lib/Option';
 
+const opened = fromPredicate((x: ws) => x.readyState === WebSocket.OPEN);
 
 const start =
     () => {
         const app = e();
         const server = app.listen(3333, () => {
             const wss = new ws.Server({ server });
-            wss.on('connection', function connection(s, req) {
-                // const location = url.parse(req.url, true);
-                // You might use location.query.access_token to authenticate or share sessions
-                // or req.headers.cookie (see http://stackoverflow.com/a/16395220/151312)
+            let xs: ws[] = [];
 
-                // ws.on('message', function incoming(message) {
-                //     console.log('received: %s', message);
-                // });
+            wss.on('connection', function connection(s, _req) {
+                const withoutMe = filter((as: ws) => as !== s);
+                xs = cons(s)(xs)
 
-                setInterval(() => {
-                    const m: MoveMessage = {
-                        id: 'foo',
-                        user: 'bar',
-                        data: {
-                            x: Math.random(),
-                            y: Math.random(),
-                        }
+                s.on('message', (msg) => {
+                    try {
+                        const data = JSON.stringify(JSON.parse(msg.toString()));
+                        withoutMe(xs)
+                            .forEach(x => opened(x).map(xo => xo.send(data)))
+                        console.log(`broadcasted |> ${data}`);
                     }
-                    s.send(JSON.stringify(m));
-                }, 1000);
+                    catch (err) {
+                        console.error(err);
+                    }
+                })
+
+                s.on('close', () => xs = withoutMe(xs));
+
             });
         })
     }

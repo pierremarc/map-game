@@ -4,21 +4,30 @@
     "description": "a game of map",
     "main": "dist/index.js",
     "scripts": {
-        "build": "rm -rf out && tsc",
-        "watch": "tsc -w",
+        "build:client": "rm -rf out && webpack --config webpack.client.config.js",
+        "watch:client": " webpack --config webpack.client.config.js --watch",
+        "build:server": "tsc -p server/tsconfig.json",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "pierre marchand",
     "license": "AGPL-3.0",
     "devDependencies": {
         "@types/express": "^4.0.37",
+        "@types/openlayers": "^4.3.8",
         "@types/uuid": "^3.4.3",
         "@types/ws": "^3.2.0",
+        "babel-core": "^6.26.0",
+        "babel-loader": "^7.1.2",
         "express": "^4.16.2",
         "fp-ts": "^0.5.4",
         "io-ts": "^0.7.2",
+        "openlayers": "^4.4.2",
+        "source-map-loader": "^0.2.2",
+        "ts-loader": "^3.0.5",
         "typescript": "^2.5.3",
         "uuid": "^3.1.0",
+        "webpack": "^3.8.1",
         "ws": "^3.2.0"
-    }
+    },
+    "dependencies": {}
 }

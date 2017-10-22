@@ -26,11 +26,17 @@ export const connect =
     (url: string) => {
         const ws = new WebSocket(url);
         const handlers: HandlerRec<MessageType>[] = [];
-
+        ws.onerror = err => console.error(err);
         ws.onmessage =
             (m) => {
-                validate(m.data)
-                    .map(m => handlers.map(applyHandler(m)));
+                try {
+                    const data = JSON.parse(m.data);
+                    validate(data)
+                        .map(m => handlers.map(applyHandler(m)));
+                }
+                catch (err) {
+                    console.error(`data didnt deserialize [${m.data}]`)
+                }
             }
 
         const subscribe =
@@ -42,7 +48,8 @@ export const connect =
 
         const send =
             <T extends MessageType>(m: Message<T>) => {
-                ws.send(m);
+                ws.send(JSON.stringify(m));
+                return m;
             }
 
         return { subscribe, send };

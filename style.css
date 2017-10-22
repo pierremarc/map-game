@@ -1,0 +1,16 @@
+
+@import "ol.css";
+
+.map {
+    overflow: hidden;
+}
+
+.user {
+    position: absolute;
+    top:0;
+    left:0;
+    z-index:1000;
+    width: 24px;
+    height: 24px;
+    background-color: green;
+}

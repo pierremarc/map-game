@@ -40,10 +40,11 @@ const PartialMessageIO =
         })
     ]);
 
-const MoveDataIO = i({
+export const MoveDataIO = i({
     x: io.number,
     y: io.number,
 });
+export type MoveData = io.TypeOf<typeof MoveDataIO>;
 
 const SelectDataIO = i({
     item: io.string,
@@ -65,10 +66,10 @@ export const SelectMessageIO = PartialMessageIO(SelectDataIO);
 export const DropMessageIO = PartialMessageIO(DropDataIO);
 export const WriteMessageIO = PartialMessageIO(WriteDataIO);
 
-export type MoveMessage = io.TypeOf<typeof MoveMessageIO>;
-export type SelectMessage = io.TypeOf<typeof SelectMessageIO>;
-export type DropMessage = io.TypeOf<typeof DropMessageIO>;
-export type WriteMessage = io.TypeOf<typeof WriteMessageIO>;
+export type MoveMessage = io.TypeOf<typeof MoveMessageIO> & { type: 'move' };
+export type SelectMessage = io.TypeOf<typeof SelectMessageIO> & { type: 'select' };
+export type DropMessage = io.TypeOf<typeof DropMessageIO> & { type: 'drop' };
+export type WriteMessage = io.TypeOf<typeof WriteMessageIO> & { type: 'write' };
 
 export const UntypedMessageIO = u([
     MoveMessageIO,
