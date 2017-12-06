@@ -91,6 +91,16 @@ const toDataURL =
     };
 
 
+const toIMG =
+    (f: File) => new Promise<HTMLImageElement>((resolve, _reject) =>
+        toDataURL(f)
+            .then((data) => {
+                const img = IMG();
+                img.addEventListener('load', () => resolve(img), false);
+                img.src = data;
+            })
+    )
+
 
 
 const sz =
@@ -111,8 +121,7 @@ const sz =
 
 const markable =
     (f: File) =>
-        toDataURL(f)
-            .then(data => IMG({ src: data }))
+        toIMG(f)
             .then((img) => {
                 const { hori, vert } = sz(
                     img.naturalHeight,
