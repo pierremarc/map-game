@@ -46,7 +46,7 @@ module.exports = {
     resolve: {
         // alias: SDI_ALIAS,
         // proj4 module declaration is not consistent with its ditribution
-        // mainFields: ["browser", "main", /* "module" */],
+        mainFields: ["browser", "main", /* "module" */],
         extensions: ['.ts', '.js'],
     },
 
@@ -55,6 +55,7 @@ module.exports = {
             {
                 enforce: 'pre',
                 test: /\.js$/,
+                exclude: resolve(ROOT, './node_modules/'),
                 loader: 'source-map-loader',
             },
             {

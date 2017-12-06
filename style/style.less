@@ -11,9 +11,16 @@
     top:0;
     left:0;
     z-index:1000;
-    width: 24px;
-    height: 24px;
-    background-color: green;
+    width: 32px;
+    height: 32px;
+    border:1px solid black;
+
+        display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 32px;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 
@@ -29,13 +36,61 @@
 }
 
 .item {
-    display: contents;
-    width: 24px;
-    height: 24px;
-    background-color: white;
+    width: 32px;
+    height: 32px;
+    background-color: transparent;
+
+    &.selected{
+        border: 2px solid rgb(187, 8, 8);
+    }
 }
 
 .items .item:hover {
     color: rgb(5, 136, 197)
 }
 
+.create-item {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: auto;
+    width: 50%;
+    background-color: white;
+    z-index: 10;
+}
+
+.text {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: auto;
+    width: 300px;
+    background-color: white;
+    z-index: 10;
+
+    .text-item{
+        font-family: monospace;
+        font-size: 100%;
+        &.selected{
+            font-weight: bold;
+            background-color: lightgrey;
+        }
+    }
+}
+
+.button{
+    display: inline-block;
+    font-family: monospace;
+    font-weight:bold; 
+    font-size: 12px;
+    text-transform: lowercase;
+    text-align: center;
+    padding: 3px;
+    cursor: default;
+    border: 1px solid lightblue;
+
+    &:hover{
+        border: 1px solid cyan;
+        background-color: lightgray;
+    }
+}

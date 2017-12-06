@@ -2,8 +2,9 @@ import { Option, some, none } from "fp-ts/lib/Option";
 import { validate, MessageType, Message } from "../lib/io";
 // import * as uuid from 'uuid';
 import { Tuple } from "fp-ts/lib/Tuple";
+import * as debug from 'debug';
 
-
+const logger = debug('ml:connection');
 
 export type Handler<T extends MessageType> = (m: Option<Message<T>>) => void;
 
@@ -42,7 +43,12 @@ export const connect =
         const subscribe =
             <T extends MessageType>(t: T) =>
                 (h: Handler<T>) => {
-                    handlers.push(new Tuple([t as MessageType, h]));
+                    const w: Handler<T> =
+                        (a) => {
+                            logger(`message ${t}`);
+                            return h(a);
+                        }
+                    handlers.push(new Tuple([t as MessageType, w]));
                 };
 
 
@@ -54,3 +60,7 @@ export const connect =
 
         return { subscribe, send };
     };
+
+
+
+logger('loaded');

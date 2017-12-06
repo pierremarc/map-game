@@ -1,8 +1,8 @@
 import * as uuid from 'uuid';
-import { DIV, style, absolute } from './dom';
-import { createStream } from './stream';
-import { Map, View, layer, source, proj, Overlay } from 'openlayers';
-import { Option } from 'fp-ts/lib/Option';
+import { DIV, style, absolute, addClass, removeClass } from './dom';
+import { createMessageStream } from './stream';
+import { Map, View, layer, source, proj, Overlay, MapBrowserEvent } from 'openlayers';
+import { Option, fromNullable } from 'fp-ts/lib/Option';
 import { Message, SelectData } from '../lib/io';
 
 
@@ -29,8 +29,8 @@ const coords =
 export const createMap =
     (user: string, getS: () => Option<Message<"select">>) => {
         const root = DIV({ 'class': 'map' });
-        const move = createStream<'move'>();
-        const drop = createStream<'drop'>();
+        const move = createMessageStream<'move'>();
+        const drop = createMessageStream<'drop'>();
         const olMap = new Map(mapOptions);
         const getCoords = coords(olMap);
 
@@ -44,14 +44,26 @@ export const createMap =
         olMap.setTarget(root);
 
         const addOverlay =
-            (element: HTMLElement, coords: ol.Coordinate) => {
+            (id: string, element: HTMLElement, coords: ol.Coordinate) => {
                 const popup = new Overlay({
+                    id,
                     element,
+                    // positioning: 'center-center',
+                    // stopEvent: false,
                 });
                 popup.setPosition(coords);
+                popup.setPositioning('center-center');
                 olMap.addOverlay(popup);
+                olMap.render();
             }
 
+        const selectItem =
+            (id: string) => {
+                olMap.getOverlays().forEach(o => removeClass(o.getElement(), 'selected'));
+                fromNullable(olMap.getOverlayById(id))
+                    .map(o => fromNullable(o.getElement())
+                        .map(e => addClass(e, 'selected')))
+            }
         root.addEventListener('mousemove', ev => {
             const coordinates = getCoords(ev);
             move.feed({
@@ -63,11 +75,12 @@ export const createMap =
                     y: coordinates[1],
                 }
             })
-        }
-        );
+        }, false);
 
-        root.addEventListener('click', (ev) => {
-            const coordinates = getCoords(ev);
+        olMap.on('click', (ev: MapBrowserEvent) => {
+            // root.addEventListener('click', (ev) => {
+            // const coordinates = getCoords(ev);
+            const coordinates = ev.coordinate;
             getS().map(m => drop.feed({
                 user,
                 id: uuid.v4(),
@@ -80,5 +93,5 @@ export const createMap =
             }));
         });
 
-        return { move, drop, olMap, addOverlay };
+        return { move, drop, olMap, addOverlay, selectItem };
     }

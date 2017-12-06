@@ -14,6 +14,7 @@ export const MessagetTypeIO = u([
     l('select'),
     l('drop'),
     l('write'),
+    l('citem'),
 ], 'MessagetTypeIO');
 export type MessageType = io.TypeOf<typeof MessagetTypeIO>;
 
@@ -56,8 +57,17 @@ export const DropDataIO = io.intersection([MoveDataIO, SelectDataIO]);
 export type DropData = io.TypeOf<typeof DropDataIO>;
 
 const WriteDataIO = i({
+    node: io.string,
     content: io.string,
 });
+export type WriteData = io.TypeOf<typeof WriteDataIO>;
+
+
+export const CitemDataIO = i({
+    name: io.string,
+    encoded: io.string,
+})
+export type CitemData = io.TypeOf<typeof CitemDataIO>;
 
 // export const MoveMessageIO = PartialMessageIO(MoveDataIO, 'move');
 // export const SelectMessageIO = PartialMessageIO(SelectDataIO, 'select');
@@ -68,17 +78,20 @@ export const MoveMessageIO = PartialMessageIO(MoveDataIO);
 export const SelectMessageIO = PartialMessageIO(SelectDataIO);
 export const DropMessageIO = PartialMessageIO(DropDataIO);
 export const WriteMessageIO = PartialMessageIO(WriteDataIO);
+export const CitemMessageIO = PartialMessageIO(CitemDataIO);
 
 export type MoveMessage = io.TypeOf<typeof MoveMessageIO> & { type: 'move' };
 export type SelectMessage = io.TypeOf<typeof SelectMessageIO> & { type: 'select' };
 export type DropMessage = io.TypeOf<typeof DropMessageIO> & { type: 'drop' };
 export type WriteMessage = io.TypeOf<typeof WriteMessageIO> & { type: 'write' };
+export type CitemMessage = io.TypeOf<typeof CitemMessageIO> & { type: 'citem' };
 
 export const UntypedMessageIO = u([
     MoveMessageIO,
     SelectMessageIO,
     DropMessageIO,
     WriteMessageIO,
+    CitemMessageIO,
 ], 'UntypedMessageIO')
 
 export type Message_ = io.TypeOf<typeof UntypedMessageIO>;

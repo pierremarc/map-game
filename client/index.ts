@@ -3,9 +3,11 @@ import { connect } from './connection';
 import { createMap } from './map';
 import { createUsers } from './user';
 import { style, px, appendText, emptyElement } from './dom';
-import { MoveData, SelectData, Message, DropData } from '../lib/io';
-import { createItems, createItem } from './items';
+import { MoveData, SelectData, Message, DropData, CitemData, WriteData } from '../lib/io';
+import { createItemFactory, createItemWidget, createItemNodeFor } from './items';
 import { cons, head } from 'fp-ts/lib/Array';
+import { createTextWidget } from './text';
+import { fromPredicate } from 'fp-ts/lib/Option';
 
 const log = (...m: any[]) => console.log(...m);
 
@@ -16,8 +18,13 @@ const start =
         const moves = subscribe('move');
         const selects = subscribe('select');
         const drops = subscribe('drop');
+        const citems = subscribe('citem');
+        const writes = subscribe('write');
         const { userDo } = createUsers();
-        const items = createItems(user);
+        const { select, createItem } = createItemFactory(user);
+        const cStream = createItemWidget(user);
+        const { setAttachmentNode, appendTextNode, selectStream } = createTextWidget(send, user);
+
 
         let sm: Message<'select'>[] = [];
 
@@ -27,7 +34,9 @@ const start =
 
         const map = createMap(user, getSelected);
 
-        moves(mo => mo.map(m => userDo(m.user)((elem) => {
+        const withoutMe = fromPredicate<Message<"move">>(m => m.user !== user);
+
+        moves(mo => mo.chain(withoutMe).map(m => userDo(m.user)((elem) => {
             const { width, height } = elem.getBoundingClientRect();
             const { x, y } = m.data as MoveData;
             const pos = map.olMap.getPixelFromCoordinate([x, y])
@@ -40,25 +49,47 @@ const start =
         selects(se => se.map(s => userDo(s.user)((elem) => {
             const data = s.data as SelectData;
             emptyElement(elem);
-            appendText(data.item)(elem);
+            appendText(data.item[0])(elem);
         })))
 
-        drops(dr => dr.map(d => userDo(d.user)((/* elem */) => {
+        drops(dr => dr.map(d => {
             const data = d.data as DropData;
-            map.addOverlay(createItem(data.item), [data.x, data.y]);
-        })))
+            map.addOverlay(
+                d.id,
+                createItemNodeFor(data.item,
+                    () => {
+                        setAttachmentNode(d.id);
+                        map.selectItem(d.id);
+                    }),
+                [data.x, data.y]);
+        }))
+
+        selectStream.subscribe((nid) => {
+            setAttachmentNode(nid);
+            map.selectItem(nid);
+            return nid;
+        });
 
 
-        items.subscribe(s => {
+        citems(ci => ci.map(({ data }) => createItem(data as CitemData)))
+
+        writes(wr => wr.map(w => appendTextNode(w.data as WriteData)))
+
+
+        select.subscribe(s => {
             sm = cons(s)(sm);
             return send(s);
         });
 
+        cStream.subscribe((c) => {
+            // createItem(c.data as CitemData);
+            return send(c);
+        });
 
         map.move.subscribe(m => send(m));
         map.drop.subscribe(d => {
-            const data = d.data as DropData;
-            map.addOverlay(createItem(data.item), [data.x, data.y]);
+            // const data = d.data as DropData;
+            // map.addOverlay(createItemNode(data.item), [data.x, data.y]);
             return send(d);
         });
     };
@@ -67,8 +98,7 @@ const start =
 document.onreadystatechange = () => {
     if ('interactive' === document.readyState) {
         log(`starting`);
-        const loc = document.location;
-
-        start(`ws://${loc.hostname}:3333`);
+        const wsServer = (<any>window).mapLogServer as string;
+        start(wsServer);
     }
 };

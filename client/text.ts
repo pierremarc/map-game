@@ -1,0 +1,86 @@
+
+import * as debug from 'debug';
+import * as uuid from 'uuid';
+import { fromNullable } from 'fp-ts/lib/Option';
+
+import { DIV, TEXTAREA, TEXT, removeClass, addClass } from './dom';
+import { Message, WriteData } from '../lib/io';
+import { createStream } from './stream';
+
+const logger = debug('ml:text');
+
+type Sender = (m: Message<'write'>) => Message<'write'>
+
+
+const makeTextNode =
+    (data: WriteData) =>
+        DIV({ 'class': 'text-item' }, TEXT(data.content));
+
+export const createTextWidget =
+    (send: Sender, user: string) => {
+        const selectStream = createStream<string>();
+        const widget = DIV({ 'class': 'text' });
+        const textList = DIV({ 'class': 'list' });
+        const form = DIV({ 'class': 'form' });
+        const input = TEXTAREA();
+        const submit = DIV({ 'class': 'submit button' }, TEXT('submit'));
+        widget.appendChild(textList);
+        widget.appendChild(form);
+        form.appendChild(input);
+        form.appendChild(submit);
+        document.body.appendChild(widget);
+
+
+        let currentNode: string | null = null;
+        const nodeMap: { [k: string]: Element[] } = {};
+
+        const selectNode =
+            (id: string) => {
+                Object.keys(nodeMap)
+                    .forEach(k => nodeMap[k].forEach(e => removeClass(e, 'selected')));
+                if (id in nodeMap) {
+                    nodeMap[id].forEach(e => addClass(e, 'selected'));
+                }
+            }
+        const setAttachmentNode = (n: string) => {
+            currentNode = n;
+            selectNode(n);
+        };
+
+        const create =
+            () => fromNullable(currentNode)
+                .map((node) => {
+                    const content = input.value;
+                    send({
+                        user,
+                        id: uuid(),
+                        type: 'write',
+                        data: { content, node },
+                    });
+                    input.value = '';
+                })
+
+        submit.addEventListener('click', create, false);
+
+        const recordNode =
+            (id: string, n: Element) => {
+                if (!(id in nodeMap)) {
+                    nodeMap[id] = [];
+                }
+                nodeMap[id].push(n);
+                n.addEventListener('click',
+                    () => selectStream.feed(id), false);
+                return n;
+            }
+
+
+        const appendTextNode =
+            (data: WriteData) => {
+                textList.appendChild(recordNode(data.node, makeTextNode(data)));
+            }
+
+        return { setAttachmentNode, appendTextNode, selectNode, selectStream };
+    }
+
+
+logger('loaded');

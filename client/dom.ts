@@ -152,6 +152,13 @@ const factory =
         (attrs: Attributes = {}, ...children: HTMLElement[]) =>
             createElement<T>(tagName, attrs, ...children);
 
+export const TEXT =
+    (content: string) => {
+        const span = SPAN();
+        span.appendChild(document.createTextNode(content));
+        return span;
+    }
+
 export const DIV = factory<HTMLDivElement>('div');
 
 export const SPAN = factory<HTMLSpanElement>('span');
