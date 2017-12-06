@@ -4,12 +4,11 @@ import * as uuid from 'uuid';
 import { fromNullable } from 'fp-ts/lib/Option';
 
 import { DIV, TEXTAREA, TEXT, removeClass, addClass } from './dom';
-import { Message, WriteData } from '../lib/io';
-import { createStream } from './stream';
+import { WriteData } from '../lib/io';
+import { createStream, createMessageStream } from './stream';
 
 const logger = debug('ml:text');
 
-type Sender = (m: Message<'write'>) => Message<'write'>
 
 
 const makeTextNode =
@@ -17,8 +16,9 @@ const makeTextNode =
         DIV({ 'class': 'text-item' }, TEXT(data.content));
 
 export const createTextWidget =
-    (send: Sender, user: string) => {
+    (user: string) => {
         const selectStream = createStream<string>();
+        const textStream = createMessageStream<'write'>();
         const widget = DIV({ 'class': 'text' });
         const textList = DIV({ 'class': 'list' });
         const form = DIV({ 'class': 'form' });
@@ -51,7 +51,7 @@ export const createTextWidget =
             () => fromNullable(currentNode)
                 .map((node) => {
                     const content = input.value;
-                    send({
+                    textStream.feed({
                         user,
                         id: uuid(),
                         type: 'write',
@@ -79,7 +79,7 @@ export const createTextWidget =
                 textList.appendChild(recordNode(data.node, makeTextNode(data)));
             }
 
-        return { setAttachmentNode, appendTextNode, selectNode, selectStream };
+        return { setAttachmentNode, appendTextNode, selectNode, selectStream, textStream };
     }
 
 

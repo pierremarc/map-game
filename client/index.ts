@@ -23,20 +23,24 @@ const start =
         const { userDo } = createUsers();
         const { select, createItem } = createItemFactory(user);
         const cStream = createItemWidget(user);
-        const { setAttachmentNode, appendTextNode, selectStream } = createTextWidget(send, user);
-
+        const { setAttachmentNode, appendTextNode, selectStream, textStream } = createTextWidget(user);
 
         let sm: Message<'select'>[] = [];
-
-
-        const getSelected =
-            () => head(sm)
-
+        const getSelected = () => head(sm)
         const map = createMap(user, getSelected);
 
-        const withoutMe = fromPredicate<Message<"move">>(m => m.user !== user);
+        select.subscribe(s => {
+            sm = cons(s)(sm);
+            return send(s);
+        });
+        cStream.subscribe(send);
+        textStream.subscribe(send);
+        map.move.subscribe(send);
+        map.drop.subscribe(send);
 
-        moves(mo => mo.chain(withoutMe).map(m => userDo(m.user)((elem) => {
+        const moveWithoutMe = fromPredicate<Message<"move">>(m => m.user !== user);
+
+        moves(mo => mo.chain(moveWithoutMe).map(m => userDo(m.user)((elem) => {
             const { width, height } = elem.getBoundingClientRect();
             const { x, y } = m.data as MoveData;
             const pos = map.olMap.getPixelFromCoordinate([x, y])
@@ -70,28 +74,11 @@ const start =
             return nid;
         });
 
-
         citems(ci => ci.map(({ data }) => createItem(data as CitemData)))
 
         writes(wr => wr.map(w => appendTextNode(w.data as WriteData)))
 
 
-        select.subscribe(s => {
-            sm = cons(s)(sm);
-            return send(s);
-        });
-
-        cStream.subscribe((c) => {
-            // createItem(c.data as CitemData);
-            return send(c);
-        });
-
-        map.move.subscribe(m => send(m));
-        map.drop.subscribe(d => {
-            // const data = d.data as DropData;
-            // map.addOverlay(createItemNode(data.item), [data.x, data.y]);
-            return send(d);
-        });
     };
 
 

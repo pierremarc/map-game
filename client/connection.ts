@@ -45,7 +45,7 @@ export const connect =
                 (h: Handler<T>) => {
                     const w: Handler<T> =
                         (a) => {
-                            logger(`message ${t}`);
+                            // logger(`message ${t}`);
                             return h(a);
                         }
                     handlers.push(new Tuple([t as MessageType, w]));

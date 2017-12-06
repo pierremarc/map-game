@@ -78,8 +78,6 @@ export const createMap =
         }, false);
 
         olMap.on('click', (ev: MapBrowserEvent) => {
-            // root.addEventListener('click', (ev) => {
-            // const coordinates = getCoords(ev);
             const coordinates = ev.coordinate;
             getS().map(m => drop.feed({
                 user,

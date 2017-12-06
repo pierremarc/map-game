@@ -44,3 +44,15 @@ export const writeSymbol =
                     }
                 }))
         );
+
+
+export const symbolToJSON =
+    (r: MapSymbol) => ({
+        type: 'citem',
+        id: r.id,
+        user: r.session,
+        data: {
+            name: r.name,
+            encoded: r.encoded,
+        },
+    })

@@ -34,3 +34,16 @@ export const createNode =
         session,
     });
 
+
+export const nodeToJSON =
+    (r: Node) => ({
+        type: 'drop',
+        id: r.id,
+        user: r.session,
+        data: {
+            x: r.position.x,
+            y: r.position.y,
+            item: r.symbol,
+        },
+    })
+

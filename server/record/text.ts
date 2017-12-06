@@ -44,3 +44,14 @@ export const writeText =
                     }
                 }))
         );
+
+export const textToJSON =
+    (r: Text) => ({
+        type: 'write',
+        id: r.id,
+        user: r.session,
+        data: {
+            node: r.node,
+            content: r.text,
+        },
+    })

@@ -7,8 +7,9 @@ import { createServer, Server } from 'http';
 import { DropMessageIO, WriteMessageIO, CitemMessageIO } from '../lib/io';
 import { cons, filter } from "fp-ts/lib/Array";
 import { fromPredicate } from 'fp-ts/lib/Option';
+import { isRight } from 'fp-ts/lib/Either';
 import { initLogFile, LogFile } from './log';
-import { createNode, createText, createSymbol } from './record';
+import { createNode, createText, createSymbol, nodeToJSON, textToJSON, symbolToJSON } from './record';
 
 const opened = fromPredicate((x: ws) => x.readyState === ws.OPEN);
 
@@ -40,6 +41,9 @@ const startWS =
 
         let xs: ws[] = [];
 
+        const broadcast =
+            (msg: string) => xs.forEach(x => opened(x).map(xo => xo.send(msg)));
+
         wss.on('connection', function connection(s, _req) {
             const withoutMe = filter((as: ws) => as !== s);
             const session = uuid();
@@ -49,34 +53,9 @@ const startWS =
             console.log(`Session connected ${session} `);
             lf.tell().map(r => {
                 switch (r.kind) {
-                    case 'node': return s.send(JSON.stringify({
-                        type: 'drop',
-                        id: r.id,
-                        user: r.session,
-                        data: {
-                            x: r.position.x,
-                            y: r.position.y,
-                            item: r.symbol,
-                        },
-                    }))
-                    case 'text': return s.send(JSON.stringify({
-                        type: 'write',
-                        id: r.id,
-                        user: r.session,
-                        data: {
-                            node: r.node,
-                            content: r.text,
-                        },
-                    }))
-                    case 'symbol': return s.send(JSON.stringify({
-                        type: 'citem',
-                        id: r.id,
-                        user: r.session,
-                        data: {
-                            name: r.name,
-                            encoded: r.encoded,
-                        },
-                    }))
+                    case 'node': return s.send(JSON.stringify(nodeToJSON(r)))
+                    case 'text': return s.send(JSON.stringify(textToJSON(r)))
+                    case 'symbol': return s.send(JSON.stringify(symbolToJSON(r)))
                 }
             });
             // });
@@ -85,28 +64,31 @@ const startWS =
                 try {
                     const Obj = JSON.parse(msg.toString());
 
-                    DropMessageIO.validate(Obj, [])
-                        .map(({ data }) => {
+                    const dropRecord = DropMessageIO.validate(Obj, [])
+                        .map(({ data }) =>
                             lf.log(
-                                createNode({ x: data.x, y: data.y }, data.item, session));
-                        });
+                                createNode({ x: data.x, y: data.y }, data.item, session)))
+                        .map(r => broadcast(JSON.stringify(nodeToJSON(r))));
 
-                    WriteMessageIO.validate(Obj, [])
-                        .map(({ data }) => {
+                    const writeRecord = WriteMessageIO.validate(Obj, [])
+                        .map(({ data }) =>
                             lf.log(
-                                createText(data.node, data.content, session));
-                        });
+                                createText(data.node, data.content, session)))
+                        .map(r => broadcast(JSON.stringify(textToJSON(r))));
 
-                    CitemMessageIO.validate(Obj, [])
-                        .map(({ data }) => {
+                    const citemRecord = CitemMessageIO.validate(Obj, [])
+                        .map(({ data }) =>
                             lf.log(
-                                createSymbol(data.name, data.encoded, session));
-                        });
+                                createSymbol(data.name, data.encoded, session)))
+                        .map(r => broadcast(JSON.stringify(symbolToJSON(r))));
 
-                    lf.sync();
-                    const data = JSON.stringify(Obj);
-                    xs.forEach(x => opened(x).map(xo => xo.send(data)))
-                    // console.log(`broadcasted |> ${data}`);
+                    if (isRight(dropRecord) || isRight(writeRecord) || isRight(citemRecord)) {
+                        lf.sync();
+                    }
+                    else {
+                        broadcast(JSON.stringify(Obj));
+                    }
+
                 }
                 catch (err) {
                     console.error(err);

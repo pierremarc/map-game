@@ -50,7 +50,7 @@ export type RecordValidation = io.Validation<LogRecord>;
 
 export interface LogFile {
     tell(): Readonly<LogRecord[]>;
-    log(r: LogRecord): void;
+    log: <T extends LogRecord>(r: T) => T;
     sync(): Promise<void>;
 }
 
@@ -109,9 +109,10 @@ export const initLogFile =
 
         return openFileTask(path).map((fd) => {
             const log =
-                (r: LogRecord) => {
+                <T extends LogRecord>(r: T) => {
                     records.push(r);
                     op = op.chain(() => writeRecord(r, fd));
+                    return r;
                 };
             return { tell, log, sync };
         })
