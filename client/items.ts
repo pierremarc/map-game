@@ -1,7 +1,7 @@
 
 import * as debug from 'debug';
 import * as uuid from 'uuid';
-import { DIV, INPUT, IMG, TEXT, CANVAS } from './dom';
+import { DIV, INPUT, IMG, TEXT, CANVAS, removeClass, addClass } from './dom';
 import { MessageStreamI, createMessageStream } from './stream';
 import { CitemData } from '../lib/io';
 import { fromNullable } from 'fp-ts/lib/Option';
@@ -30,11 +30,9 @@ const createItemNode =
 export const createItemNodeFor =
     (c: string, h: () => void) => {
         const node = createItemNode(c);
-        logger(`on ${c}`)
         node.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            logger('click on item');
             h();
         }, false);
         return node;
@@ -42,20 +40,26 @@ export const createItemNodeFor =
 
 
 const selectableItem =
-    (user: string, s: MessageStreamI<'select'>) =>
+    (user: string, s: MessageStreamI<'select'>, root: HTMLElement) =>
         (item: CitemData) => {
             const { name, encoded } = item;
             itemsCache[name] = encoded;
 
             const elem = createItemNode(name);
-            elem.addEventListener('click', () => s.feed({
-                user,
-                id: uuid.v4(),
-                type: 'select',
-                data: {
-                    item: name,
-                }
-            }), false);
+            elem.addEventListener('click', () => {
+                s.feed({
+                    user,
+                    id: uuid.v4(),
+                    type: 'select',
+                    data: {
+                        item: name,
+                    }
+                });
+
+                Array.from(root.children)
+                    .forEach(n => removeClass(n, 'active'));
+                addClass(elem, 'active');
+            }, false);
 
             return elem;
         };
@@ -63,8 +67,8 @@ const selectableItem =
 export const createItemFactory =
     (user: string) => {
         const select = createMessageStream<'select'>();
-        const builder = selectableItem(user, select);
         const root = DIV({ 'class': 'items' });
+        const builder = selectableItem(user, select, root);
         document.body.appendChild(root);
 
         const createItem =
