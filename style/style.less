@@ -46,6 +46,9 @@ body {
     .flex();
     height: 32px;
     border-bottom: 1px dotted #000;
+    @media @portrait {
+        height: 65px;
+    }
 }
 
 .items {
@@ -53,6 +56,9 @@ body {
     z-index: 10000;
     display: flex;
     padding: @margin / 2;
+    @media @portrait {
+        .absolute(65px, 0, initial, initial);
+    }
 }
 
 .item {
@@ -75,6 +81,9 @@ body {
     padding: @margin / 2;
     height: auto;
     width: 300px;
+    @media @portrait {
+        width: 100%;
+    }
 
     .form {
         height: 110px;
@@ -94,7 +103,6 @@ body {
         margin-bottom: @margin / 2;
         border: 1px solid lightgrey;
         &.selected{
-            // font-weight: bold;
             background-color: #eee;
             cursor: default;
         }
@@ -104,6 +112,9 @@ body {
         max-height: calc(~"50vh - 110px");
         overflow-y: auto;
         padding-bottom: @margin;
+        @media @portrait {
+            max-height: calc(~"50vh - 110px - 65px");
+        }
     }
 }
 
