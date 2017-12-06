@@ -66,9 +66,16 @@ body {
     height: 32px;
     background-color: transparent;
     margin-left: @margin / 2;
+    box-sizing: content-box;
+    border: 3px solid transparent;
+    padding-bottom: 2px;
 
     &.selected{
-        border: 2px solid rgb(187, 8, 8);
+        border-bottom: 3px solid black;
+    }
+
+    &.active {
+        border-bottom: 3px solid lightgrey;
     }
 }
 
