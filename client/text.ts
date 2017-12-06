@@ -23,7 +23,7 @@ export const createTextWidget =
         const wtitle = DIV({ 'class': 'widget-title' }, TEXT('Annotate for the selected marker on map'));
         const textList = DIV({ 'class': 'list' });
         const form = DIV({ 'class': 'form' });
-        const input = TEXTAREA();
+        const input = TEXTAREA({ 'rows': '4' });
         const submit = DIV({ 'class': 'submit button' }, TEXT('submit'));
         widget.appendChild(form);
         widget.appendChild(textList);
