@@ -3,6 +3,8 @@
 @import "variables.less";
 @import "./ol.css";
 
+* {box-sizing: border-box;}
+
 body {
     font-family: sans-serif;
     font-size: 12px;
@@ -13,17 +15,16 @@ body {
 .text {
     background: white;
     z-index: 10;
-    padding: @margin;
+    // padding: @margin;
 }
 
 .map {
     overflow: hidden;
-    // background: url('imgs/map-trame.png') repeat;
-    background: grey;
+    background: lightgray;
 }
 
 .widget-title {
-    margin-bottom: @margin;
+    // margin-bottom: @margin;
 }
 
 .user {
@@ -40,9 +41,15 @@ body {
     font-weight: bold;
 }
 
+.create-item {
+    .absolute(0, 0, initial, 0);
+    .flex();
+    height: 32px;
+    border-bottom: 1px dotted #000;
+}
 
 .items {
-    .absolute(0, 0, initial, initial);
+    .absolute(32px, 0, initial, initial);
     z-index: 10000;
     display: flex;
     padding: @margin / 2;
@@ -52,7 +59,7 @@ body {
     width: 32px;
     height: 32px;
     background-color: transparent;
-    padding-left: @margin / 2;
+    margin-left: @margin / 2;
 
     &.selected{
         border: 2px solid rgb(187, 8, 8);
@@ -63,17 +70,10 @@ body {
     color: rgb(5, 136, 197)
 }
 
-.create-item {
-    .absolute(initial, initial, 0, 0);
-    display: flex;
-    flex-direction: column;
-    height: auto;
-}
-
 .text {
     .absolute(initial, 0, 0, initial);
+    padding: @margin / 2;
     height: auto;
-    // max-height: 75%;
     width: 300px;
 
     .form {
