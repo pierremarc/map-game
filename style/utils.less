@@ -1,0 +1,71 @@
+.absolute(@top, @right, @bottom, @left) {
+    position: absolute;
+    top: @top;
+    right: @right;
+    bottom: @bottom;
+    left: @left;
+}
+
+.flex(@align:center, @justify:space-around, @wrap:wrap) {
+    display: flex;
+    align-items: @align;
+    justify-content: @justify;
+    flex-wrap: @wrap;
+}
+
+.word-wrap {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -ms-word-break: break-all;
+    word-break: break-word;
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+}
+
+.shadow {
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(50, 50, 50, 0.5);
+    -moz-box-shadow:    0px 0px 5px 0px rgba(50, 50, 50, 0.5);
+    box-shadow:         0px 0px 5px 0px rgba(50, 50, 50, 0.5);
+}
+
+.text-shadow(@color) {
+    text-shadow:
+    -1px -1px 0 @color,
+     1px -1px 0 @color,
+    -1px  1px 0 @color,
+     1px  1px 0 @color;
+}
+
+
+
+//
+// //AWSOMEFONT
+//
+// .awsomefont {
+//     //copied from fa/less/core.less
+//     // display: inline-block;
+//     font: normal normal normal @fa-font-size-base/@fa-line-height-base FontAwesome; // shortening font declaration
+//     font-size: inherit; // can't have font-size inherit on line above, so need to override
+//     text-rendering: auto; // optimizelegibility throws things off #1094
+//     -webkit-font-smoothing: antialiased;
+//     -moz-osx-font-smoothing: grayscale;
+// }
+//
+//
+// .awsomefont-spin {
+//     .awsomefont;
+//     display: inline-block;
+//       -webkit-animation: fa-spin 2s infinite linear;
+//          -moz-animation: fa-spin 2s infinite linear;
+//             -o-animation: fa-spin 2s infinite linear;
+//                 animation: fa-spin 2s infinite linear;
+// }
+// .awsomefont-burst(@time:1s) {
+//     .awsomefont;
+//     display: inline-block;
+//     -webkit-animation: burst @time infinite linear;
+//           animation: burst @time infinite linear;
+// }
+//

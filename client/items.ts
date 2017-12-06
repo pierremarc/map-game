@@ -149,8 +149,9 @@ export const createItemWidget =
     (user: string) => {
         const stream = createMessageStream<'citem'>();
         const widget = DIV({ 'class': 'create-item' });
+        const wtitle = DIV({ 'class': 'widget-title' }, TEXT('Add a marker to the collection (img)'));
         const finput = INPUT({ 'type': 'file' });
-        const ninput = INPUT({ 'type': 'text' });
+        const ninput = INPUT({ 'type': 'text', 'placeholder': 'give it a name' });
         const submit = DIV({ 'class': 'create-submit button' }, TEXT('Create'));
 
         const create =
@@ -177,6 +178,7 @@ export const createItemWidget =
 
 
         submit.addEventListener('click', create, false);
+        widget.appendChild(wtitle);
         widget.appendChild(finput);
         widget.appendChild(ninput);
         widget.appendChild(submit);
