@@ -79,7 +79,7 @@ export const createTextWidget =
         const appendTextNode =
             (data: WriteData) => {
                 textList.appendChild(recordNode(data.node, makeTextNode(data)));
-                const { height } = textList.getBoundingClientRect();
+                const height = Array.from(textList.children).reduce((acc, n) => acc + n.getBoundingClientRect().height, 0);
                 textList.scrollTop = height;
             }
 
