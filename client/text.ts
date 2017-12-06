@@ -77,6 +77,8 @@ export const createTextWidget =
         const appendTextNode =
             (data: WriteData) => {
                 textList.appendChild(recordNode(data.node, makeTextNode(data)));
+                const { height } = textList.getBoundingClientRect();
+                textList.scrollTop = height;
             }
 
         return { setAttachmentNode, appendTextNode, selectNode, selectStream, textStream };
