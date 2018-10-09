@@ -4,7 +4,7 @@ const { readdirSync } = require('fs');
 const webpack = require('webpack');
 
 // const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 
 const ROOT = resolve(__dirname);
@@ -14,24 +14,13 @@ const CLIENT_ENTRY_PATH = resolve(ROOT, 'client/index.ts');
 // const SERVER_ENTRY_PATH = resolve(ROOT, 'server/index.ts');
 const STYLE_ENTRY_PATH = resolve(ROOT, 'style/style.js');
 const OUTPUT_DIR = resolve(ROOT, 'public/out');
-// const STYLE_ENTRY_PATH = resolve(ROOT, 'style/index.js');
-// const SDI_ALIAS_ROOT = resolve(ROOT, '../sdi/');
-// const SDI_ALIAS = {
-//     'sdi/source': resolve(SDI_ALIAS_ROOT, 'source'),
-//     'sdi/polyfill': resolve(SDI_ALIAS_ROOT, 'polyfill'),
-// };
-
-// console.log(`ROOT ${ROOT}`);
-// console.log(`BUNDLE_ENTRY_PATH ${BUNDLE_ENTRY_PATH}`);
-// console.log(`STYLE_ENTRY_PATH ${STYLE_ENTRY_PATH}`);
-// console.log(`OUTPUT_DIR ${OUTPUT_DIR}`);
-// console.log(`SDI_ALIAS ${JSON.stringify(SDI_ALIAS, null, 2)}`);
 
 
 
 
 module.exports = {
     context: ROOT,
+    mode: 'development',
     entry: {
         client: CLIENT_ENTRY_PATH,
         style: STYLE_ENTRY_PATH,
@@ -53,25 +42,10 @@ module.exports = {
     module: {
         rules: [
             {
-                enforce: 'pre',
-                test: /\.js$/,
-                exclude: resolve(ROOT, './node_modules/'),
-                loader: 'source-map-loader',
-            },
-            {
-                enforce: 'pre',
                 test: /\.ts$/,
-                use: "source-map-loader"
-            },
-            {
-                test: /\.ts$/,
-                loaders: [
-                    // {
-                    //     loader: 'babel-loader',
-                    // },
-                    {
-                        loader: 'ts-loader',
-                    }
+                use: [
+                    // { loader: 'babel-loader' },
+                    { loader: 'ts-loader' },
                 ],
             },
 
@@ -82,19 +56,20 @@ module.exports = {
             // CSS
             {
                 test: /\.css$/,
-                loader: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
-                    use: "css-loader"
-                })
+                use: [
+                    { loader: MiniCssExtractPlugin.loader },
+                    { loader: "css-loader" }
+                ],
             },
 
             // LESS
             {
                 test: /\.less$/,
-                loader: ExtractTextPlugin.extract({
-                    fallback: "style-loader",
-                    use: "css-loader!less-loader"
-                })
+                use: [
+                    { loader: MiniCssExtractPlugin.loader },
+                    { loader: "css-loader" },
+                    { loader: "less-loader" }
+                ],
             },
 
             //fonts
@@ -116,14 +91,14 @@ module.exports = {
             }
         ]
     },
-    // plugins: [
-    //     new webpack.optimize.UglifyJsPlugin(),
-    // ]
     plugins: [
-        new ExtractTextPlugin("[name].css"),
+        new MiniCssExtractPlugin({
+            // Options similar to the same options in webpackOptions.output
+            // both options are optional
+            filename: "[name].css",
+            chunkFilename: "[id].css"
+        })
     ],
-    devtool: 'inline-cheap-module-source-map',
-    // devtool: 'eval',
 };
 
 

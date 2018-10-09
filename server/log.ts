@@ -55,7 +55,7 @@ export interface LogFile {
 }
 
 const validate =
-    (a: any): RecordValidation => io.validate(a, LogRecordIO);
+    (a: any): RecordValidation => LogRecordIO.decode(a);
 
 const readLog =
     (path: string) => {

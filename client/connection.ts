@@ -17,7 +17,7 @@ type HandlerRec<T extends MessageType> = Tuple<T, Handler<T>>;
 const applyHandler =
     <T extends MessageType>(m: Message<T>) =>
         (hr: HandlerRec<T>) =>
-            m.type === hr.fst() ?
+            m.type === hr.fst ?
                 hr.map(h => h(some(m))) :
                 hr.map(h => h(none));
 
@@ -48,7 +48,7 @@ export const connect =
                             // logger(`message ${t}`);
                             return h(a);
                         }
-                    handlers.push(new Tuple([t as MessageType, w]));
+                    handlers.push(new Tuple(t, w));
                 };
 
 

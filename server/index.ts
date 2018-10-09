@@ -7,7 +7,6 @@ import { createServer, Server } from 'http';
 import { DropMessageIO, WriteMessageIO, CitemMessageIO } from '../lib/io';
 import { cons, filter } from "fp-ts/lib/Array";
 import { fromPredicate } from 'fp-ts/lib/Option';
-import { isRight } from 'fp-ts/lib/Either';
 import { initLogFile, LogFile } from './log';
 import { createNode, createText, createSymbol, nodeToJSON, textToJSON, symbolToJSON } from './record';
 
@@ -45,9 +44,9 @@ const startWS =
             (msg: string) => xs.forEach(x => opened(x).map(xo => xo.send(msg)));
 
         wss.on('connection', function connection(s, _req) {
-            const withoutMe = filter((as: ws) => as !== s);
+            const withoutMe = (as: ws) => as !== s;
             const session = uuid();
-            xs = cons(s)(xs)
+            xs = cons(s, xs)
 
             // s.on('open', () => {
             console.log(`Session connected ${session} `);
@@ -82,7 +81,7 @@ const startWS =
                                 createSymbol(data.name, data.encoded, session)))
                         .map(r => broadcast(JSON.stringify(symbolToJSON(r))));
 
-                    if (isRight(dropRecord) || isRight(writeRecord) || isRight(citemRecord)) {
+                    if (dropRecord.isRight() || writeRecord.isRight() || citemRecord.isRight()) {
                         lf.sync();
                     }
                     else {
@@ -95,7 +94,7 @@ const startWS =
                 }
             })
 
-            s.on('close', () => xs = withoutMe(xs));
+            s.on('close', () => xs = filter(xs, withoutMe));
 
         });
     }

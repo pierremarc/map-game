@@ -1,7 +1,7 @@
 import * as uuid from 'uuid';
 import { DIV, style, absolute, addClass, removeClass } from './dom';
 import { createMessageStream } from './stream';
-import { Map, View, layer, source, proj, Overlay, MapBrowserEvent } from 'openlayers';
+import { Map, View, layer, source, proj, Overlay, MapBrowserEvent, olx } from 'openlayers';
 import { Option, fromNullable } from 'fp-ts/lib/Option';
 import { Message, SelectData } from '../lib/io';
 

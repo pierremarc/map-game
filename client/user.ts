@@ -31,7 +31,7 @@ const createUser =
     (id: string): UserT => {
         const elem = DIV({ 'class': 'user' })
         document.body.appendChild(elem)
-        return new Tuple([id, elem])
+        return new Tuple(id, elem)
     };
 
 export const createUsers =
@@ -39,16 +39,17 @@ export const createUsers =
         let users: UserT[] = [];
 
         const getUserT =
-            (id: string): UserT => findFirst((u: UserT) => u.fst() === id)(users).fold(
-                () => {
-                    users = cons(createUser(id))(users);
-                    return getUserT(id);
-                },
-                u => u
-            );
+            (id: string): UserT =>
+                findFirst(users, (u: UserT) => u.fst === id).foldL(
+                    () => {
+                        users = cons(createUser(id), users);
+                        return getUserT(id);
+                    },
+                    u => u
+                );
 
         const getUser =
-            (id: string) => getUserT(id).snd();
+            (id: string) => getUserT(id).snd;
 
         const userDo =
             (id: string) =>
@@ -56,7 +57,7 @@ export const createUsers =
                     f(getUser(id));
 
         const allDo =
-            (f: (h: HTMLElement) => void) => users.map(u => u.snd()).map(f);
+            (f: (h: HTMLElement) => void) => users.map(u => u.snd).map(f);
 
         return { userDo, allDo };
     }

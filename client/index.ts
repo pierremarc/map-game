@@ -30,7 +30,7 @@ const start =
         const map = createMap(user, getSelected);
 
         select.subscribe(s => {
-            sm = cons(s)(sm);
+            sm = cons(s, sm);
             return send(s);
         });
         cStream.subscribe(send);
