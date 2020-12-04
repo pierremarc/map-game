@@ -1,12 +1,13 @@
 import * as e from 'express';
 import * as ws from 'ws';
 import * as uuid from 'uuid';
+import * as cors from 'cors';
 import slugify from './slugify';
 import { readdir } from 'fs';
 import { createServer, Server } from 'http';
 import { DropMessageIO, WriteMessageIO, CitemMessageIO } from '../lib/io';
 import { cons, filter } from "fp-ts/lib/Array";
-import { fromPredicate, some, none } from 'fp-ts/lib/Option';
+import { fromPredicate, some, none, fromNullable } from 'fp-ts/lib/Option';
 import { initLogFile, LogFile } from './log';
 import { createNode, createText, createSymbol, nodeToJSON, textToJSON, symbolToJSON } from './record';
 
@@ -131,10 +132,13 @@ const registerRoute =
                 initLogFile(rootDir, name)
                     .map((lf) => {
                         startWS(server, port, wsPath, lf);
-                        r.get(`/${name}.geojson`, (rq, rs) => {
-                            rs.set('Content-Type', 'application/json')
-                            rs.set('Access-Control-Allow-Origin', rq.get('Origin'));
-                            rs.set('Access-Control-Allow-Methods', 'GET');
+                        r.get(`/${name}.geojson`, cors({
+                            origin: (origin, callback) => callback(null, true),
+                        }), (rq, rs) => {
+                            // rs.set('Content-Type', 'application/json')
+                            // rs.set('Vary', 'Origin')
+                            // rs.set('Access-Control-Allow-Origin', fromNullable(rq.get('Origin')).getOrElse('*'));
+                            // rs.set('Access-Control-Allow-Methods', 'GET');
                             return rs.send(lf.json());
                         })
                         console.log(`Added GeoJSON "/${name}.geojson" `)
