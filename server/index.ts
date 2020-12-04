@@ -6,7 +6,7 @@ import { readdir } from 'fs';
 import { createServer, Server } from 'http';
 import { DropMessageIO, WriteMessageIO, CitemMessageIO } from '../lib/io';
 import { cons, filter } from "fp-ts/lib/Array";
-import { fromPredicate } from 'fp-ts/lib/Option';
+import { fromPredicate, some, none } from 'fp-ts/lib/Option';
 import { initLogFile, LogFile } from './log';
 import { createNode, createText, createSymbol, nodeToJSON, textToJSON, symbolToJSON } from './record';
 
@@ -131,6 +131,13 @@ const registerRoute =
                 initLogFile(rootDir, name)
                     .map((lf) => {
                         startWS(server, port, wsPath, lf);
+                        r.get(`/${name}.geojson`, (rq, rs) => {
+                            rs.set('Content-Type', 'application/json')
+                            rs.set('Access-Control-Allow-Origin', ['*']);
+                            rs.set('Access-Control-Allow-Methods', 'GET');
+                            return rs.send(lf.json());
+                        })
+                        console.log(`Added GeoJSON "/${name}.geojson" `)
                         records.push({ name, url: path });
                         resolve(path);
                     })
@@ -138,13 +145,27 @@ const registerRoute =
         )
     }
 
+const getName = ({ query }: e.Request) => {
+    if (query.name && typeof query.name === 'string') {
+        return some(query.name)
+    }
+    return none;
+}
+
 const startLog =
     (rootDir: string, server: Server, router: e.Router) =>
-        (request: e.Request, response: e.Response) => {
-            const name: string = slugify(request.query.name.slice(0, 128));
-            registerRoute(rootDir, server, router, name)
-                .then(path => response.redirect(path))
-        }
+        (request: e.Request, response: e.Response) => getName(name)
+            .foldL(
+                () => {
+                    response.status(500).send('Cannot find a name in request')
+                },
+                name => {
+                    const slug = slugify(name.slice(0, 128));
+                    registerRoute(rootDir, server, router, slug)
+                        .then(path => response.redirect(path))
+                }
+            )
+
 
 const index =
     (_request: e.Request, response: e.Response) => {

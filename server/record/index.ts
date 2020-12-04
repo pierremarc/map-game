@@ -40,3 +40,8 @@ export const writeRecord =
                     }
                 }))
         );
+
+
+export const isNode = (r: LogRecord): r is Node => r.kind === 'node';
+export const isText = (r: LogRecord): r is Text => r.kind === 'text';
+export const isSymbol = (r: LogRecord): r is MapSymbol => r.kind === 'symbol';

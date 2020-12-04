@@ -1,11 +1,11 @@
-
+import * as proj4 from 'proj4';
 import { existsSync, mkdirSync, open, openSync, readFileSync, closeSync } from 'fs';
 import { resolve, join, sep } from 'path';
 import { Task } from 'fp-ts/lib/Task';
 import * as io from 'io-ts';
 
-import { LogRecordIO, writeRecord, LogRecord } from './record';
-
+import { LogRecordIO, writeRecord, LogRecord, Node, isNode, isText, Position } from './record';
+import { FeatureCollection, Feature } from 'geojson-iots';
 
 
 
@@ -48,10 +48,42 @@ export const createLog =
 
 export type RecordValidation = io.Validation<LogRecord>;
 
+
+interface Indexed<T> {
+    [key: string]: T
+}
+
+
+
+const { forward } = proj4('EPSG:3857', 'EPSG:4326');
+const toLatLong = (
+    p: Position
+) => forward([p.x, p.y])
+
+
+const nodeToFeature = (
+    texts: Indexed<string>
+) => (n: Node): Feature => ({
+    type: 'Feature',
+    id: n.id,
+    geometry: {
+        type: 'Point',
+        coordinates: toLatLong(n.position),
+    },
+    properties: {
+        id: n.id,
+        text: texts[n.id] ?? '',
+        symbol: n.symbol,
+        time: n.time,
+        session: n.session,
+    }
+})
+
 export interface LogFile {
     tell(): Readonly<LogRecord[]>;
     log: <T extends LogRecord>(r: T) => T;
     sync(): Promise<void>;
+    json(): FeatureCollection;
 }
 
 const validate =
@@ -89,6 +121,9 @@ const readLog =
         return records;
     }
 
+
+
+
 export const initLogFile =
     (rootDir: string, name: string): Task<LogFile> => {
         ensureDir(rootDir);
@@ -107,6 +142,25 @@ export const initLogFile =
                 return op_.run();
             };
 
+        const json = (): FeatureCollection => {
+            const records = tell();
+            const texts = records.filter(isText).reduce((acc, t) => {
+                const newText = (() => {
+                    if (t.node in acc) {
+                        return [acc[t.node], t.text].join('\n\n');
+                    }
+                    return t.text;
+                })();
+                return ({ ...acc, [t.node]: newText })
+            }, {} as Indexed<string>)
+            const features = records.filter(isNode).map(nodeToFeature(texts));
+
+            return {
+                type: 'FeatureCollection',
+                features
+            };
+        }
+
         return openFileTask(path).map((fd) => {
             const log =
                 <T extends LogRecord>(r: T) => {
@@ -114,6 +168,6 @@ export const initLogFile =
                     op = op.chain(() => writeRecord(r, fd));
                     return r;
                 };
-            return { tell, log, sync };
+            return { tell, log, sync, json };
         })
     };
