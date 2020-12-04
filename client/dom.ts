@@ -1,3 +1,4 @@
+import { fromNullable } from "fp-ts/lib/Option";
 
 export const isKeyCode =
     (kc: KeyCode) => (event: KeyboardEvent) => {
@@ -133,10 +134,11 @@ export const attribute =
 export const style =
     <T extends HTMLElement>(elem: T, attrs: Partial<CSSStyleDeclaration>) => {
         Object.keys(attrs)
-            .forEach((k) => {
-                elem.style.setProperty(k, attrs[k as keyof CSSStyleDeclaration]);
-                // elem.style[k] = attrs[k];
-            });
+            .map(k => k as keyof CSSStyleDeclaration)
+            .forEach((k) => fromNullable(attrs[k])
+                .map(v => {
+                    elem.style.setProperty(k.toString(), v.toString());
+                }));
         return elem;
     }
 
