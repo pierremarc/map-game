@@ -133,7 +133,7 @@ const registerRoute =
                         startWS(server, port, wsPath, lf);
                         r.get(`/${name}.geojson`, (rq, rs) => {
                             rs.set('Content-Type', 'application/json')
-                            rs.set('Access-Control-Allow-Origin', ['*']);
+                            rs.set('Access-Control-Allow-Origin', rq.get('Origin'));
                             rs.set('Access-Control-Allow-Methods', 'GET');
                             return rs.send(lf.json());
                         })
