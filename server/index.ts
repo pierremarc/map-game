@@ -132,9 +132,10 @@ const registerRoute =
                 initLogFile(rootDir, name)
                     .map((lf) => {
                         startWS(server, port, wsPath, lf);
-                        r.get(`/${name}.geojson`, cors({
-                            origin: (origin, callback) => callback(null, true),
-                        }), (rq, rs) => {
+                        const jsonpath = `/${name}.geojson`
+                        const jsoncors = cors({ origin: (origin, callback) => callback(null, true) })
+                        r.options(jsonpath, jsoncors)
+                        r.get(jsonpath, jsoncors, (rq, rs) => {
                             // rs.set('Content-Type', 'application/json')
                             // rs.set('Vary', 'Origin')
                             // rs.set('Access-Control-Allow-Origin', fromNullable(rq.get('Origin')).getOrElse('*'));
