@@ -1,5 +1,5 @@
 
-import { MessageType, Message } from "../lib/io";
+import { MessageType, MessageT } from "../lib/io";
 
 export type Subscriber<A> = (e: A) => A;
 
@@ -27,11 +27,11 @@ export const createStream =
 
 
 export interface MessageStreamI<T extends MessageType> {
-    subscribe: (s: (a: Message<T>) => Message<T>) => void;
-    feed: (m: Message<T>) => Message<T>[];
+    subscribe: (s: (a: MessageT<T>) => MessageT<T>) => void;
+    feed: (m: MessageT<T>) => MessageT<T>[];
 }
 
 export const createMessageStream =
     <T extends MessageType>() => {
-        return createStream<Message<T>>();
+        return createStream<MessageT<T>>();
     }

@@ -1,149 +1,59 @@
 import * as e from 'express';
-import * as ws from 'ws';
-import * as uuid from 'uuid';
 import * as cors from 'cors';
 import slugify from './slugify';
 import { readdir } from 'fs';
 import { createServer, Server } from 'http';
-import { DropMessageIO, WriteMessageIO, CitemMessageIO } from '../lib/io';
-import { cons, filter } from "fp-ts/lib/Array";
-import { fromPredicate, some, none, fromNullable } from 'fp-ts/lib/Option';
+import { some, none } from 'fp-ts/lib/Option';
 import { initLogFile, LogFile } from './log';
-import { createNode, createText, createSymbol, nodeToJSON, textToJSON, symbolToJSON } from './record';
+import { startWS, WEBSOCKET_PORT } from './websocket';
+import { pushLogRecord, getLogRecords } from './record';
 
-const opened = fromPredicate((x: ws) => x.readyState === ws.OPEN);
 
-const WS_BASE_PORT = 3333;
 const MapsMountPoint = '/maps/';
 const WsMountPoint = '/ws/';
 const LogsDir = 'logs';
 
-interface LogRecord {
-    name: string;
-    url: string;
-}
-
-const records: LogRecord[] = [];
 
 
-
-const startWS =
-    (server: Server,
-        port: number,
-        path: string,
-        lf: LogFile) => {
-
-        const wss = new ws.Server({
-            path,
-            server,
-            port
-        });
-
-        let xs: ws[] = [];
-
-        const broadcast =
-            (msg: string) => xs.forEach(x => opened(x).map(xo => xo.send(msg)));
-
-        wss.on('connection', function connection(s, _req) {
-            const withoutMe = (as: ws) => as !== s;
-            const session = uuid();
-            xs = cons(s, xs)
-
-            // s.on('open', () => {
-            console.log(`Session connected ${session} `);
-            lf.tell().map(r => {
-                switch (r.kind) {
-                    case 'node': return s.send(JSON.stringify(nodeToJSON(r)))
-                    case 'text': return s.send(JSON.stringify(textToJSON(r)))
-                    case 'symbol': return s.send(JSON.stringify(symbolToJSON(r)))
-                }
-            });
-            // });
-
-            s.on('message', (msg) => {
-                try {
-                    const Obj = JSON.parse(msg.toString());
-
-                    const dropRecord = DropMessageIO.validate(Obj, [])
-                        .map(({ data }) =>
-                            lf.log(
-                                createNode({ x: data.x, y: data.y }, data.item, session)))
-                        .map(r => broadcast(JSON.stringify(nodeToJSON(r))));
-
-                    const writeRecord = WriteMessageIO.validate(Obj, [])
-                        .map(({ data }) =>
-                            lf.log(
-                                createText(data.node, data.content, session)))
-                        .map(r => broadcast(JSON.stringify(textToJSON(r))));
-
-                    const citemRecord = CitemMessageIO.validate(Obj, [])
-                        .map(({ data }) =>
-                            lf.log(
-                                createSymbol(data.name, data.encoded, session)))
-                        .map(r => broadcast(JSON.stringify(symbolToJSON(r))));
-
-                    if (dropRecord.isRight() || writeRecord.isRight() || citemRecord.isRight()) {
-                        lf.sync();
-                    }
-                    else {
-                        broadcast(JSON.stringify(Obj));
-                    }
-
-                }
-                catch (err) {
-                    console.error(err);
-                }
-            })
-
-            s.on('close', () => xs = filter(xs, withoutMe));
-
-        });
-    }
-
-
-
-const makeMapIndex =
-    (hostname: string, port: number, wsPath: string) =>
-        `<html>
+const makeMapIndex = (
+    hostname: string,
+    logname: string,
+) =>
+    `<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <link rel="stylesheet" href="/out/style.css" />
     <script>
-    window.mapLogServer = 'ws://${hostname}:${port}${wsPath}';
+    window.mapLogServer = {
+        name: "${logname}",
+        hostname: "${hostname}",
+        port: ${WEBSOCKET_PORT},
+        path: "${WsMountPoint}",
+    };
     </script>
     <script src="/out/client.js"></script>
 </head> <body></body> </html>`
 
 
-let lastUsedPort = WS_BASE_PORT;
-
 const registerRoute =
-    (rootDir: string, server: Server, r: e.Router, name: string) => {
+    (rootDir: string, r: e.Router, name: string) => {
+        console.log(`Add Log "/${name}" `)
         const path = `${MapsMountPoint}${name}`;
-        const wsPath = `${WsMountPoint}${name}`;
-        lastUsedPort += 1;
-        const port = lastUsedPort;
         r.get(`/${name}`,
-            (rq, rs) => rs.send(makeMapIndex(rq.hostname, port, wsPath)))
-        console.log(`Added Log "/${name}" `)
+            (rq, rs) => rs.send(makeMapIndex(rq.hostname, name)))
         return (
             new Promise<string>((resolve, _reject) =>
                 initLogFile(rootDir, name)
                     .map((lf) => {
-                        startWS(server, port, wsPath, lf);
                         const jsonpath = `/${name}.geojson`
                         const jsoncors = cors({ origin: (origin, callback) => callback(null, true) })
                         r.options(jsonpath, jsoncors)
-                        r.get(jsonpath, jsoncors, (rq, rs) => {
-                            // rs.set('Content-Type', 'application/json')
-                            // rs.set('Vary', 'Origin')
-                            // rs.set('Access-Control-Allow-Origin', fromNullable(rq.get('Origin')).getOrElse('*'));
-                            // rs.set('Access-Control-Allow-Methods', 'GET');
-                            return rs.send(lf.json());
-                        })
+                        r.get(jsonpath, jsoncors, (rq, rs) => rs.send(lf.json()))
+
                         console.log(`Added GeoJSON "/${name}.geojson" `)
-                        records.push({ name, url: path });
+
+                        pushLogRecord({ name, url: path, file: lf });
                         resolve(path);
                     })
                     .run())
@@ -159,14 +69,15 @@ const getName = ({ query }: e.Request) => {
 
 const startLog =
     (rootDir: string, server: Server, router: e.Router) =>
-        (request: e.Request, response: e.Response) => getName(name)
+        (request: e.Request, response: e.Response) => getName(request)
             .foldL(
                 () => {
                     response.status(500).send('Cannot find a name in request')
                 },
                 name => {
+                    console.log('name', name)
                     const slug = slugify(name.slice(0, 128));
-                    registerRoute(rootDir, server, router, slug)
+                    registerRoute(rootDir, router, slug)
                         .then(path => response.redirect(path))
                 }
             )
@@ -174,7 +85,7 @@ const startLog =
 
 const index =
     (_request: e.Request, response: e.Response) => {
-        const rs = records.map(({ name, url }) => `<p><a href="${url}">${name}</a></p>`).join('\n');
+        const rs = getLogRecords().map(({ name, url }) => `<p><a href="${url}">${name}</a></p>`).join('\n');
         response.send(`<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
@@ -194,6 +105,10 @@ const start =
         const app = e();
         const router = e.Router();
         const server = createServer(app);
+        app.use((req, res, next) => {
+            console.log(`>> ${req.path}`)
+            next()
+        })
 
         app.use(MapsMountPoint, router);
         app.get('/', index);
@@ -205,13 +120,14 @@ const start =
                 console.error(`Could not read logs dir ${LogsDir}`)
             }
             else {
-                files.forEach(f => registerRoute(LogsDir, server, router, f))
+                files.forEach(f => registerRoute(LogsDir, router, f))
             }
         })
 
 
         server.listen(3333, '0.0.0.0', () => {
-            console.log('Started on  http://0.0.0.0:3333');
+            console.log('Started main server on  http://0.0.0.0:3333');
+            startWS(server, WEBSOCKET_PORT, WsMountPoint);
         })
     }
 

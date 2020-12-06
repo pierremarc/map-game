@@ -1,7 +1,5 @@
 import * as io from 'io-ts';
 
-import { Either } from "fp-ts/lib/Either";
-
 
 
 
@@ -9,7 +7,17 @@ const i = io.interface;
 const u = io.union;
 const l = io.literal;
 
+export const ClientConfigIO = i({
+    name: io.string,
+    hostname: io.string,
+    port: io.number,
+    path: io.string,
+}, 'ClientConfigIO');
+
+export type ClientConfig = io.TypeOf<typeof ClientConfigIO>;
+
 export const MessagetTypeIO = u([
+    l('connect'),
     l('move'),
     l('select'),
     l('drop'),
@@ -21,25 +29,22 @@ export type MessageType = io.TypeOf<typeof MessagetTypeIO>;
 export const BaseMessageIO = i({
     id: io.string,
     user: io.string,
-    // type: MessagetTypeIO,
 }, 'MessageIO');
 
-// const PartialMessageIO =
-//     <T, MT extends MessageType>(dataType: io.Type<T>, t: MT) => io.intersection([
-//         BaseMessageIO,
-//         i({
-//             type: l(t),
-//             data: dataType,
-//         })
-//     ]);
-
 const PartialMessageIO =
-    <T>(dataType: io.Type<T>) => io.intersection([
+    <T, V extends MessageType>(dataType: io.Type<T>, tag: io.LiteralC<V>) => io.intersection([
         BaseMessageIO,
         i({
+            type: tag,
             data: dataType,
         })
     ]);
+
+export const ConnectDataIO = i({
+    map: io.string,
+});
+export type ConnectData = io.TypeOf<typeof ConnectDataIO>;
+
 
 export const MoveDataIO = i({
     x: io.number,
@@ -53,7 +58,11 @@ export const SelectDataIO = i({
 export type SelectData = io.TypeOf<typeof SelectDataIO>;
 
 
-export const DropDataIO = io.intersection([MoveDataIO, SelectDataIO]);
+export const DropDataIO = i({
+    x: io.number,
+    y: io.number,
+    item: io.string,
+});
 export type DropData = io.TypeOf<typeof DropDataIO>;
 
 const WriteDataIO = i({
@@ -69,24 +78,23 @@ export const CitemDataIO = i({
 })
 export type CitemData = io.TypeOf<typeof CitemDataIO>;
 
-// export const MoveMessageIO = PartialMessageIO(MoveDataIO, 'move');
-// export const SelectMessageIO = PartialMessageIO(SelectDataIO, 'select');
-// export const DropMessageIO = PartialMessageIO(DropDataIO, 'drop');
-// export const WriteMessageIO = PartialMessageIO(WriteDataIO, 'write');
 
-export const MoveMessageIO = PartialMessageIO(MoveDataIO);
-export const SelectMessageIO = PartialMessageIO(SelectDataIO);
-export const DropMessageIO = PartialMessageIO(DropDataIO);
-export const WriteMessageIO = PartialMessageIO(WriteDataIO);
-export const CitemMessageIO = PartialMessageIO(CitemDataIO);
+export const ConnectMessageIO = PartialMessageIO(ConnectDataIO, l('connect'));
+export const MoveMessageIO = PartialMessageIO(MoveDataIO, l('move'));
+export const SelectMessageIO = PartialMessageIO(SelectDataIO, l('select'));
+export const DropMessageIO = PartialMessageIO(DropDataIO, l('drop'));
+export const WriteMessageIO = PartialMessageIO(WriteDataIO, l('write'));
+export const CitemMessageIO = PartialMessageIO(CitemDataIO, l('citem'));
 
-export type MoveMessage = io.TypeOf<typeof MoveMessageIO> & { type: 'move' };
-export type SelectMessage = io.TypeOf<typeof SelectMessageIO> & { type: 'select' };
-export type DropMessage = io.TypeOf<typeof DropMessageIO> & { type: 'drop' };
-export type WriteMessage = io.TypeOf<typeof WriteMessageIO> & { type: 'write' };
-export type CitemMessage = io.TypeOf<typeof CitemMessageIO> & { type: 'citem' };
+export type ConnectMessage = io.TypeOf<typeof ConnectMessageIO>;
+export type MoveMessage = io.TypeOf<typeof MoveMessageIO>;
+export type SelectMessage = io.TypeOf<typeof SelectMessageIO>;
+export type DropMessage = io.TypeOf<typeof DropMessageIO>;
+export type WriteMessage = io.TypeOf<typeof WriteMessageIO>;
+export type CitemMessage = io.TypeOf<typeof CitemMessageIO>;
 
-export const UntypedMessageIO = u([
+export const MessageIO = u([
+    ConnectMessageIO,
     MoveMessageIO,
     SelectMessageIO,
     DropMessageIO,
@@ -94,16 +102,19 @@ export const UntypedMessageIO = u([
     CitemMessageIO,
 ], 'UntypedMessageIO')
 
-export type Message_ = io.TypeOf<typeof UntypedMessageIO>;
-export type Message<MT extends MessageType> = Message_ & { type: MT };
+export type Message = io.TypeOf<typeof MessageIO>;
 
-export const validate =
-    (data: any) => {
-        const X = io.intersection([
-            UntypedMessageIO,
-            i({ type: MessagetTypeIO })
-        ]);
+export type MessageT<T extends MessageType> =
+    T extends 'connect' ? ConnectMessage :
+    T extends 'move' ? MoveMessage :
+    T extends 'select' ? SelectMessage :
+    T extends 'drop' ? DropMessage :
+    T extends 'write' ? WriteMessage :
+    T extends 'citem' ? CitemMessage : unknown
+    ;
 
-        const ret: Either<io.ValidationError[], io.TypeOf<typeof X>> = X.validate(data, []);
-        return ret;
-    };
+export const HeloMessageIO = i({
+    type: l('helo'),
+    user: io.string,
+})
+

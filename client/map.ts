@@ -3,7 +3,7 @@ import { DIV, style, absolute, addClass, removeClass } from './dom';
 import { createMessageStream } from './stream';
 import { Map, View, layer, source, proj, Overlay, MapBrowserEvent, olx } from 'openlayers';
 import { Option, fromNullable } from 'fp-ts/lib/Option';
-import { Message, SelectData } from '../lib/io';
+import { SelectData, SelectMessage } from '../lib/io';
 
 
 const brussels = proj.fromLonLat([4.35, 50.85]);
@@ -27,7 +27,7 @@ const coords =
             m.getCoordinateFromPixel(m.getEventPixel(ev));
 
 export const createMap =
-    (user: string, getS: () => Option<Message<"select">>) => {
+    (user: string, getS: () => Option<SelectMessage>) => {
         const root = DIV({ 'class': 'map' });
         const move = createMessageStream<'move'>();
         const drop = createMessageStream<'drop'>();
