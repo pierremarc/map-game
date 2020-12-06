@@ -27,9 +27,7 @@ const makeMapIndex = (
     <script>
     window.mapLogServer = {
         name: "${logname}",
-        hostname: "${hostname}",
-        port: ${WEBSOCKET_PORT},
-        path: "${WsMountPoint}",
+        websocket: "ws://${hostname}${WsMountPoint}",
     };
     </script>
     <script src="/out/client.js"></script>

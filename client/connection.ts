@@ -46,7 +46,7 @@ interface Connect {
 
 export const connect =
     (config: ClientConfig) => new Promise<Connect>((resolve, _reject) => {
-        const ws = new WebSocket(checkScheme(`ws://${config.hostname}:${config.port}/ws/`));
+        const ws = new WebSocket(checkScheme(config.websocket));
         const handlers: HandlerRec<MessageType>[] = [];
         let connected = false;
         ws.onerror = err => console.error(err);

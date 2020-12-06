@@ -9,9 +9,7 @@ const l = io.literal;
 
 export const ClientConfigIO = i({
     name: io.string,
-    hostname: io.string,
-    port: io.number,
-    path: io.string,
+    websocket: io.string,
 }, 'ClientConfigIO');
 
 export type ClientConfig = io.TypeOf<typeof ClientConfigIO>;
