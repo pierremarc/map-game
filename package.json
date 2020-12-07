@@ -30,7 +30,7 @@
         "express": "^4.17.1",
         "file-loader": "^1.1.11",
         "fp-ts": "^1.19.5",
-        "geojson-iots": "^1.0.6",
+        "geojson-iots": "^1.0.7",
         "io-ts": "^1.10.4",
         "less": "^3.12.2",
         "less-loader": "^4.1.0",

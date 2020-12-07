@@ -3,7 +3,7 @@ import * as cors from 'cors';
 import slugify from './slugify';
 import { readdir } from 'fs';
 import { createServer, Server } from 'http';
-import { some, none } from 'fp-ts/lib/Option';
+import { some, none, fromNullable } from 'fp-ts/lib/Option';
 import { initLogFile, LogFile } from './log';
 import { startWS, WEBSOCKET_PORT } from './websocket';
 import { pushLogRecord, getLogRecords } from './record';
@@ -16,7 +16,7 @@ const LogsDir = 'logs';
 
 
 const makeMapIndex = (
-    hostname: string,
+    url: string,
     logname: string,
 ) =>
     `<html>
@@ -27,7 +27,7 @@ const makeMapIndex = (
     <script>
     window.mapLogServer = {
         name: "${logname}",
-        websocket: "ws://${hostname}${WsMountPoint}",
+        websocket: "${url}",
     };
     </script>
     <script src="/out/client.js"></script>
@@ -39,7 +39,11 @@ const registerRoute =
         console.log(`Add Log "/${name}" `)
         const path = `${MapsMountPoint}${name}`;
         r.get(`/${name}`,
-            (rq, rs) => rs.send(makeMapIndex(rq.hostname, name)))
+            (rq, rs) => rs.send(
+                makeMapIndex(
+                    fromNullable(process.env.MAPLOG_WEBSOCKET_URL)
+                        .getOrElse(`ws://${rq.hostname}${WsMountPoint}`),
+                    name)))
         return (
             new Promise<string>((resolve, _reject) =>
                 initLogFile(rootDir, name)
