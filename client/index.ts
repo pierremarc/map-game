@@ -3,16 +3,19 @@ import { connect } from './connection';
 import { createMap } from './map';
 import { createUsers } from './user';
 import { style, px, appendText, emptyElement } from './dom';
-import { MoveData, SelectData, MessageT, DropData, CitemData, WriteData, ClientConfigIO, ClientConfig } from '../lib/io';
+import { MoveData, SelectData, MessageT, DropData, CitemData, WriteData, ClientConfig } from '../lib/io';
 import { createItemFactory, createItemWidget, createItemNodeFor } from './items';
 import { cons, head } from 'fp-ts/lib/Array';
 import { createTextWidget } from './text';
 import { fromPredicate } from 'fp-ts/lib/Option';
+import { getConfig } from './config';
+import { renderHeader } from './header';
 
 
 const start =
     (config: ClientConfig) => connect(config)
         .then(({ subscribe, send, user }) => {
+            renderHeader(config.name);
             const moves = subscribe('move');
             const selects = subscribe('select');
             const drops = subscribe('drop');
@@ -84,8 +87,6 @@ const start =
 
 document.onreadystatechange = () => {
     if ('interactive' === document.readyState) {
-        const logserver = (<any>window).mapLogServer;
-        ClientConfigIO.decode(logserver)
-            .map(start)
+        getConfig().map(start)
     }
 };

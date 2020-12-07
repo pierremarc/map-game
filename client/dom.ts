@@ -179,6 +179,8 @@ export const LABEL = factory<HTMLLabelElement>('label');
 
 export const I = factory<HTMLLIElement>('i');
 
+export const H1 = factory<HTMLHeadingElement>('h1');
+
 
 export const appendText = (text: string) => (node: Element) => {
     return node.appendChild(document.createTextNode(text));
