@@ -163,6 +163,10 @@ export const TEXT =
 
 export const DIV = factory<HTMLDivElement>('div');
 
+export const DETAILS = factory<HTMLDetailsElement>('details');
+
+export const SUMMARY = factory<HTMLElement>('summary');
+
 export const SPAN = factory<HTMLSpanElement>('span');
 
 export const A = factory<HTMLAnchorElement>('a');

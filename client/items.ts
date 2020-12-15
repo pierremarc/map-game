@@ -1,7 +1,7 @@
 
 import * as debug from 'debug';
 import * as uuid from 'uuid';
-import { DIV, INPUT, IMG, TEXT, CANVAS, removeClass, addClass } from './dom';
+import { DETAILS, DIV, INPUT, IMG, TEXT, CANVAS, removeClass, addClass, SUMMARY } from './dom';
 import { MessageStreamI, createMessageStream } from './stream';
 import { CitemData } from '../lib/io';
 import { fromNullable } from 'fp-ts/lib/Option';
@@ -67,7 +67,7 @@ const selectableItem =
 export const createItemFactory =
     (user: string) => {
         const select = createMessageStream<'select'>();
-        const root = DIV({ 'class': 'items' });
+        const root = DIV({ 'class': 'items' }, TEXT('Annotate the map, pick a sticker :'));
         const builder = selectableItem(user, select, root);
         document.body.appendChild(root);
 
@@ -152,11 +152,15 @@ const markable =
 export const createItemWidget =
     (user: string) => {
         const stream = createMessageStream<'citem'>();
-        const widget = DIV({ 'class': 'create-item' });
-        const wtitle = DIV({ 'class': 'widget-title' }, TEXT('Add a marker to the collection (img)'));
+        // const widget = DIV({ 'class': 'create-item' });
+        const widget = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Add a sticker to the list')));
+        const wtitle = DIV({ 'class': 'widget-title' }, TEXT('Upload an image to add a new sticker to the list (.jpg or .png).'));
+        const wstep1 = DIV({ 'class': 'create-step' }, TEXT('1'));
         const finput = INPUT({ 'type': 'file' });
+        const wstep2 = DIV({ 'class': 'create-step' }, TEXT('2'));
         const ninput = INPUT({ 'type': 'text', 'placeholder': 'give it a name' });
-        const submit = DIV({ 'class': 'create-submit button' }, TEXT('Create'));
+        const wstep3 = DIV({ 'class': 'create-step' }, TEXT('3'));
+        const submit = DIV({ 'class': 'btn btn--submit' }, TEXT('Create sticker'));
 
         const create =
             () =>
@@ -183,8 +187,11 @@ export const createItemWidget =
 
         submit.addEventListener('click', create, false);
         widget.appendChild(wtitle);
+        widget.appendChild(wstep1);
         widget.appendChild(finput);
+        widget.appendChild(wstep2);
         widget.appendChild(ninput);
+        widget.appendChild(wstep3);
         widget.appendChild(submit);
         document.body.appendChild(widget);
 

@@ -20,14 +20,16 @@ export const createTextWidget =
         const selectStream = createStream<string>();
         const textStream = createMessageStream<'write'>();
         const widget = DIV({ 'class': 'text' });
-        const wtitle = DIV({ 'class': 'widget-title' }, TEXT('Annotate for the selected marker on map'));
+        const wtitle = DIV({ 'class': 'widget-title' }, TEXT('Comment the map'));
+        const wdesc = DIV({ 'class': 'widget-desc' }, TEXT('Select a sticker on the map, and write a comment below'));
         const textList = DIV({ 'class': 'list' });
         const form = DIV({ 'class': 'form' });
         const input = TEXTAREA({ 'rows': '4' });
-        const submit = DIV({ 'class': 'submit button' }, TEXT('submit'));
+        const submit = DIV({ 'class': 'btn btn--submit' }, TEXT('Submit comment'));
         widget.appendChild(form);
         widget.appendChild(textList);
         form.appendChild(wtitle);
+        form.appendChild(wdesc);
         form.appendChild(input);
         form.appendChild(submit);
         document.body.appendChild(widget);

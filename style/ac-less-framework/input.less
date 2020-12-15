@@ -1,0 +1,21 @@
+//form and inputs
+
+
+input {
+    width: 100%;
+    padding: @margin * 0.75 @margin * 1.5;
+    border: 1px solid @grey-medium;
+}
+
+.form--inline {
+    display: flex;
+    > *:first-child {
+        margin-right: @margin;
+    }
+}
+
+.input-wrapper input[type="text"],
+.input-wrapper input[type="email"],
+.input-wrapper input[type="password"] {
+    background-color: @grey-light;
+}

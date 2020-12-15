@@ -1,0 +1,66 @@
+@basefont: @family1, sans-serif;
+
+@margin: 1rem;
+@sm-margin: @margin / 3;
+
+@headerH: 2 * @margin;
+@footerH: @margin;
+@sidebarW: 32vw;
+
+// ** COLORS ** //
+
+@grey-dark: #a9a9aa;
+@grey-medium: #e2e2e2;
+@grey-light: #f9f9f9;
+@white: #ffffff;
+@green-light: lightgreen;
+
+// ** MIXINS ** //
+
+.absolute(@top, @right, @bottom, @left) {
+    position: absolute;
+    top: @top;
+    right: @right;
+    bottom: @bottom;
+    left: @left;
+}
+
+/******** MEDIA QUERIES BREAKPOINTS ********/
+// good to read :
+// http://bradfrost.com/blog/post/7-habits-of-highly-effective-media-queries/
+
+// @sm: ~"(min-width: 24em)";
+// @md: ~"(min-width: 46.8em)";
+// @lg: ~"(min-width: 50em)";
+// @xl: ~"(min-width: 73em)";
+
+@sm: ~'(min-width: 35.5em)';
+@md: ~'(min-width: 48em)';
+@lg: ~'(min-width: 64em)';
+@xl: ~'(min-width: 80em)';
+
+@landscape: ~'@{sm} and (orientation: landscape)';
+@landscape-md: ~'@{md} and (orientation: landscape)';
+
+/******** UTILS & MODIFIERS ********/
+
+.selectable {
+    cursor: default;
+    background-color: #f8f8f8;
+    border: 1px solid transparent;
+
+    &:hover {
+        border: 1px solid #f8f8f8 - 25%;
+        background-color: #f8f8f8 - 15%;
+    }
+}
+
+.transition {
+    transition: all 0.2s;
+    &:hover {
+        transition: all 0s;
+    }
+    &:active {
+        transition: all 0s;
+    }
+}

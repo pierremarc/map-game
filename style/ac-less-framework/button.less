@@ -1,0 +1,97 @@
+//should be decided if colors, ghost buttons, etc..
+// + which feedback when we press it..
+// see https://uxplanet.org/7-basic-rules-for-button-design-63dcdf5676b4 as exemple
+
+/**
+ * Buttons variables
+ */
+
+@fill-color-warning: red;
+@fill-color-positive: blue;
+@fill-color-neutral: #f5f5f5;
+@border-color-neutral: lightgrey;
+
+/**
+ * Buttons mixins and utils
+ */
+
+.drop-shadow
+    (@x: 0, @y: 1px, @blur: 2px, @spread: 0, @rgba:rgba(143,143,143,0.7)) {
+    -webkit-box-shadow: @x @y @blur @spread @rgba;
+    -moz-box-shadow: @x @y @blur @spread @rgba;
+    box-shadow: @x @y @blur @spread @rgba;
+}
+
+.btn-shadow {
+    .drop-shadow(0, 2px, 3px, 0);
+
+    &:hover {
+        .drop-shadow(0, 3px, 5px, 0);
+    }
+
+    &:active {
+        .drop-shadow(0, 1px, 2px, 0);
+    }
+}
+
+/**
+ * General button style
+ */
+
+.btn {
+    .transition;
+    display: inline-block;
+    padding: @margin * 0.75 @margin * 1.5;
+    text-align: center;
+    cursor: default;
+    border: 1px solid transparent;
+
+    &:hover {
+    }
+
+    &:active {
+    } //onclick
+}
+
+/**
+ * Button hierarchy
+ */
+
+.btn-primary {
+    .btn-shadow;
+    border: 0px;
+}
+
+/**
+ * Specialized button style
+ */
+
+.btn {
+    &--submit {
+        .btn-primary;
+        background-color: @fill-color-positive;
+        color: white;
+    }
+
+    &--register {
+        .btn-primary;
+        background-color: @fill-color-neutral;
+        color: darkgrey;
+    }
+
+    &--cancel {
+        .btn-primary;
+        background-color: @fill-color-warning;
+        color: white;
+    }
+
+    &--neutral,
+    &--skip {
+        color: darkgrey;
+        border-color: @border-color-neutral;
+        &:hover {
+            border-color: @border-color-neutral - 50%;
+            color: darkgrey - 50%;
+        }
+    }
+}

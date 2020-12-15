@@ -1,0 +1,246 @@
+/**
+ * extracts from default browser css
+ * check BEM methodology for naming : http://getbem.com
+ *
+ * .blockname
+ * .blockname__elementname
+ * .blockname__elementname--modifier
+ * .btn .btn--cancel
+ *
+ * no plural classes
+ * keep classes name readable
+ * shorten / compress class names is ok : eg. .zoomin
+ */
+
+/******** DEBUG ********/
+
+// .header {background-color: pink}
+// .main__content {background-color: lightgreen}
+// .main__sidebar {background-color: lightblue}
+// .footer {background-color: pink}
+
+/******** BOX SIZING RESET ********/
+
+html {
+    box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+/******** BASE STYLES ********/
+
+body {
+    font-family: @basefont, sans-serif;
+}
+
+h1,
+.title {
+    font-family: @family2, sans-serif;
+    font-size: 5rem;
+    line-height: 80%;
+    font-weight: normal;
+    // margin: 0.67rem 0; keep for reference
+    margin: 2.5rem 0;
+    letter-spacing: -0.08rem;
+
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
+}
+
+h2,
+.subtitle {
+    font-family: @family2, sans-serif;
+    font-size: 2.2rem;
+    font-weight: normal;
+    margin: 0.83rem 0;
+    letter-spacing: -0.05rem;
+}
+
+h3,
+.sectiontitle {
+    font-family: @family2, sans-serif;
+    font-size: 1.5rem;
+    font-weight: normal;
+    margin: 1em 0;
+}
+
+a,
+.link {
+    text-underline-offset: 0.1em; //fiefox and safari
+    &:hover {
+    }
+    &-active {
+    }
+}
+
+p,
+.textblock {
+    margin: @margin 0;
+}
+
+code,
+kbd,
+samp {
+    font-family: monospace, monospace; /* 1 */
+    font-size: 0.8em; //
+    padding: 0 0.2em;
+    background-color: #eee;
+    border-radius: 0.2em;
+    color: #4c4c4c;
+}
+
+/**
+ * positioning
+ */
+.main {
+    display: flex;
+    flex-direction: column;
+
+    .main__content {
+        margin-bottom: @margin;
+        @media @landscape {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.main.main--left-sidebar {
+    @media @landscape {
+        flex-direction: row;
+        .main__content {
+            margin-right: @margin;
+        }
+    }
+}
+
+.main.main--right-sidebar {
+    @media @landscape {
+        flex-direction: row-reverse;
+        .main__content {
+            margin-left: @margin;
+        }
+    }
+}
+
+/**
+ * layout
+ */
+
+body {
+    padding: @margin;
+    display: flex;
+    flex-direction: column;
+    @media @landscape {
+        padding-bottom: 0;
+        // overflow: hidden;
+    }
+}
+
+.header {
+    flex-shrink: 0;
+    @media @landscape {
+        height: @headerH;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header__title {
+        font-size: 1.5rem;
+        line-height: 1rem;
+        font-family: @family2, sans-serif;
+        letter-spacing: -0.04rem;
+    }
+}
+
+.main {
+    padding: @margin 0;
+    @media @landscape {
+        overflow: hidden;
+        padding-bottom: 0;
+    }
+}
+
+.main__content {
+    width: 100%;
+    height: calc(~'100vw - @{margin} * 2');
+    overflow: hidden;
+    border: 1px solid @grey-medium;
+    @media @landscape {
+        width: calc(~'100vw - @{sidebarW} - 3 * @{margin}');
+        // height: calc(~'100vh - @{headerH} - @{footerH} - 2 * @{margin}');
+        height: 100%;
+    }
+}
+
+.main__sidebar {
+    width: 100%;
+    @media @landscape {
+        width: @sidebarW;
+        // height: calc(~'100vh - @{headerH} - @{footerH} - 2 * @{margin}');
+        height: 100%;
+        overflow: auto;
+    }
+}
+
+.footer {
+    @media @landscape {
+        height: @footerH;
+        display: flex;
+        align-items: center;
+    }
+
+    .footer__ac-credit,
+    .footer__ac-credit a {
+        font-size: 0.6rem;
+        color: @grey-dark;
+        text-decoration: none;
+    }
+}
+
+/**
+ * AC specific elements
+ */
+
+// collections of items
+.collection {
+    display: flex;
+    flex-direction: column;
+}
+.collection__item {
+    width: 100%;
+    margin: @margin / 2 0;
+
+    &:first-child {
+        margin-top: 0;
+    }
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+//image + caption
+.imagebox {
+    img {
+    }
+    &__caption {
+    }
+}
+
+// //map main elements positioning
+// .map {
+//     .absolute(@margin * 2, calc(~"30% - @{margin}"), @margin, @margin);
+// }
+// .mapside{
+//     .absolute(@margin * 2, @margin, @margin, calc(~"70% + @{margin}"));
+//     padding-left: @margin;
+//     overflow: auto;
+// }
+//
