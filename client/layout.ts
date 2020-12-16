@@ -3,11 +3,14 @@ import { DIV, H1, TEXT, TEXTAREA, register, DETAILS, SUMMARY, INPUT, registerT, 
 
 export const layout = () => {
     const mapTitle = register('title', H1({ class: 'map-title' }))
-    
+
     const header = DIV({ class: 'header' },
         DIV({ 'class': 'header-title' }, TEXT('map-log')),
         mapTitle,
-        DIV({ 'class': 'header-links' }, A({'href':'#'}, TEXT('documentation'))),
+        DIV({ 'class': 'header-links' }, A({ 'href': '#' }, TEXT('documentation'))),
+        DIV({ 'class': 'log-link' }, A({
+            href: document.URL
+        }, TEXT('permalink')))
     )
 
 
@@ -40,19 +43,19 @@ export const layout = () => {
     const text = DIV({ 'class': 'text' },
         commentForm,
         register('text-list', DIV({ 'class': 'list' })),
-        
+
     )
 
     const footer = DIV({ 'class': 'footer' },
         SPAN({}, TEXT('Beta Version - Developped in Brussels by '),
-            A({'href':'https://atelier-cartographique.be'}, TEXT('atelier cartographique')),
+            A({ 'href': 'https://atelier-cartographique.be' }, TEXT('atelier cartographique')),
             TEXT(' - Basemap ©'),
-            A({'href':'https://www.openstreetmap.org/copyright/en'}, TEXT('OpenStreetMap Contributors')))
+            A({ 'href': 'https://www.openstreetmap.org/copyright/en' }, TEXT('OpenStreetMap Contributors')))
     )
 
     const itemsWrapper = DIV({ 'class': 'items-wrapper' },
-    items,
-    itemForm,
+        items,
+        itemForm,
     )
 
     const main = DIV({ 'class': 'main' },
