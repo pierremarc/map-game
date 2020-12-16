@@ -47,8 +47,8 @@ export const layout = () => {
     )
 
     const footer = DIV({ 'class': 'footer' },
-        SPAN({}, TEXT('Beta Version - Developped in Brussels by '),
-            A({ 'href': 'https://atelier-cartographique.be' }, TEXT('atelier cartographique')),
+        SPAN({}, TEXT('Alpha Version - Developped in Brussels by '),
+            A({'href':'https://atelier-cartographique.be'}, TEXT('atelier cartographique')),
             TEXT(' - Basemap ©'),
             A({ 'href': 'https://www.openstreetmap.org/copyright/en' }, TEXT('OpenStreetMap Contributors')))
     )

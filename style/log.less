@@ -2,7 +2,10 @@
     .absolute(0,0,0,0);
     display: flex;
     flex-direction: column;
-    padding: 0 @margin;
+
+    .header {
+        padding: 0 @margin;
+    }
 
     .main {
         height: 100%;
@@ -12,13 +15,19 @@
 
         .items-wrapper,
         .text {
-            // .neumorph();
-            // border-radius: @margin;
-            // padding: @margin;
-            // border: 3px solid @white;
+            .neumorph();
             width: 250px;
             flex-shrink: 0;
-            // background-color: @white;
+        }
+
+        .items-wrapper {
+            border-top-left-radius: initial;
+            border-bottom-left-radius: initial;
+        }
+
+        .text {
+            border-top-right-radius: initial;
+            border-bottom-right-radius: initial;
         }
 
         .map {
