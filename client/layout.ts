@@ -29,7 +29,7 @@ export const layout = () => {
         register('item-submit', DIV({ 'class': 'btn btn--submit' }, TEXT('Create sticker'))),
     )
 
-    const commentForm = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Comment the map')),
+    const commentForm = DETAILS({ 'class': 'comment-item' }, SUMMARY({}, TEXT('Comment the map')),
         DIV({ 'class': 'form' },
             DIV({ 'class': 'widget-desc' }, TEXT('Select a sticker on the map, and write a comment below')),
             registerT('text-input', TEXTAREA({ 'rows': '4' })),
@@ -51,8 +51,8 @@ export const layout = () => {
     )
 
     const itemsWrapper = DIV({ 'class': 'items-wrapper' },
-        itemForm,
-        items,
+    items,
+    itemForm,
     )
 
     const main = DIV({ 'class': 'main' },
