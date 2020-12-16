@@ -66,10 +66,12 @@ const selectableItem = (
                         .forEach(n => removeClass(n, 'active'))
 
                     addClass(elem, 'active')
-                    root.appendChild(elem);
                 }
             )
         }, false);
+
+        getRegistered('items')
+            .map(root => root.appendChild(elem))
 
         d.subscribe((m) => {
             getRegistered('items').map(
