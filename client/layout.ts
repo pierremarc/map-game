@@ -20,7 +20,9 @@ export const layout = () => {
         TEXT('Annotate the map,'),
         BR({}),
         TEXT('pick a sticker : '),
-        register('items', DIV({ 'class': 'item-list' })));
+        register('items', DIV({ 'class': 'item-list' })),
+        register('deselect', DIV({ 'class': 'deselect' }, TEXT('X'))),
+    );
 
     const itemForm = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Add a sticker to the list')),
         DIV({ 'class': 'widget-title' }, TEXT('Upload an image to add a new sticker to the list (.jpg or .png).')),
@@ -48,7 +50,7 @@ export const layout = () => {
 
     const footer = DIV({ 'class': 'footer' },
         SPAN({}, TEXT('Alpha Version - Developped in Brussels by '),
-            A({'href':'https://atelier-cartographique.be'}, TEXT('atelier cartographique')),
+            A({ 'href': 'https://atelier-cartographique.be' }, TEXT('atelier cartographique')),
             TEXT(' - Basemap ©'),
             A({ 'href': 'https://www.openstreetmap.org/copyright/en' }, TEXT('OpenStreetMap Contributors')))
     )

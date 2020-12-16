@@ -34,6 +34,21 @@ const start =
 
             getRegistered('title').map(el => el.appendChild(TEXT(config.name)))
 
+            getRegistered('deselect').map(elem => {
+                elem.addEventListener('click', () => {
+                    const m: DeSelectMessage = {
+                        user,
+                        id: uuid.v4(),
+                        type: 'deselect',
+                        data: {},
+
+                    };
+                    send<'deselect'>(m)
+                    sm = []
+                    deselect.feed(m)
+                })
+            })
+
             select.subscribe(s => {
                 sm = cons(s, sm);
                 const ret = send<'select'>(s)
