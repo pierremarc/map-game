@@ -59,6 +59,8 @@ const start =
             });
 
             const moveWithoutMe = fromPredicate<MessageT<"move">>(m => m.user !== user);
+            const selectWithoutMe = fromPredicate<MessageT<"select">>(m => m.user !== user);
+            const dselectWithoutMe = fromPredicate<MessageT<"deselect">>(m => m.user !== user);
 
 
             moves(mo => mo.chain(moveWithoutMe).map(m => userDo(m.user)((elem) => {
@@ -71,13 +73,13 @@ const start =
                 });
             })));
 
-            selects(se => se.map(s => userDo(s.user)((elem) => {
+            selects(se => se.chain(selectWithoutMe).map(s => userDo(s.user)((elem) => {
                 const data = s.data as SelectData;
                 emptyElement(elem);
                 appendText(data.item[0])(elem);
             })))
 
-            deselects(de => de.map(d => {
+            deselects(de => de.chain(dselectWithoutMe).map(d => {
                 userDo(d.user)((elem) => {
                     emptyElement(elem);
                 })
