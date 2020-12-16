@@ -20,10 +20,16 @@
         font-size: 100%;
         padding: @margin / 2;
         margin-bottom: @margin / 2;
-        border: 1px solid lightgrey;
+        border: 2px solid lightgrey;
+        cursor: default;
         &.selected {
-            background-color: #eee;
-            cursor: default;
+            border-left-color: @blue;
+            // margin-left: -@margin;
+            background-color: @white;
+        }
+
+        &:hover {
+            background-color: @white;
         }
     }
 

@@ -29,14 +29,18 @@ export const layout = () => {
         register('item-submit', DIV({ 'class': 'btn btn--submit' }, TEXT('Create sticker'))),
     )
 
-    const text = DIV({ 'class': 'text' },
-        register('text-list', DIV({ 'class': 'list' })),
+    const commentForm = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Comment the map')),
         DIV({ 'class': 'form' },
-            DIV({ 'class': 'widget-title' }, TEXT('Comment the map')),
             DIV({ 'class': 'widget-desc' }, TEXT('Select a sticker on the map, and write a comment below')),
             registerT('text-input', TEXTAREA({ 'rows': '4' })),
             register('text-submit', DIV({ 'class': 'btn btn--submit' }, TEXT('Submit comment'))),
         ),
+    )
+
+    const text = DIV({ 'class': 'text' },
+        commentForm,
+        register('text-list', DIV({ 'class': 'list' })),
+        
     )
 
     const footer = DIV({ 'class': 'footer' },
@@ -47,8 +51,8 @@ export const layout = () => {
     )
 
     const itemsWrapper = DIV({ 'class': 'items-wrapper' },
-        items,
         itemForm,
+        items,
     )
 
     const main = DIV({ 'class': 'main' },
