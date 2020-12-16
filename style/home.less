@@ -1,0 +1,49 @@
+body.home {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .main {
+        max-width: 600px;
+        margin: 0 auto;
+        padding-bottom: 50px;
+        text-align: center;
+
+        h1 {
+            margin-bottom: @margin * 2;
+        }
+
+        .pitch {
+            font-size: 1.5rem;
+        }
+
+        form {
+            text-align: left;
+            display: flex;
+            flex-wrap: wrap;
+            padding: @margin * 2 0;
+
+            h2 {
+                width: 100%;
+            }
+
+            input[type='text'] {
+                flex: 1;
+            }
+            input[type='submit'] {
+                width: 150px;
+                margin-left: @margin;
+                background-color: blue;
+                color: #fff;
+                border: 1px solid blue;
+            }
+        }
+
+        p {
+            text-align: left;
+            margin: 0;
+            margin-bottom: @margin / 3;
+        }
+    }
+}

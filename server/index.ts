@@ -91,14 +91,39 @@ const index =
         response.send(`<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
-</head> <body>
-<h1>Logs</h1>
-${rs}
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="stylesheet" href="/out/style.css" />
+</head> 
+<body class='home'>
+    <div class='header'>
+        <div class='header-title'>map-log</div>            
+        <div class='header-links'>
+            <a href='#'>documentation</a>
+        </div>            
+    </div>
+    <div class='main'>
+        <h1>Collaborative mapping </br> & territorial annotation</h1>
+        <div class='pitch'>free, no-account needed & open-source</div>
 
-<form action="/createlog/" method="get">
-<input type="text" placeholder="name" name="name" />
-<input type="submit" value="Create Log" />
-</form>
+        <form action="/createlog/" method="get">
+        <h2>Create a new map</h2>
+        <input type="text" placeholder="Give it a name" name="name" />
+        <input type="submit" value="Create it" />
+        </form>
+
+        ${rs}        
+    </div>
+    
+
+    <div class='footer'>
+            <span>Beta Version - Developped in Brussels by 
+            <a href='https://atelier-cartographique.be'>atelier cartographique</a>
+            - Basemap ©
+            <a href='https://www.openstreetmap.org/copyright/en'>OpenStreetMap Contributors</a>
+            </span>
+
+    </div>
+
 </body> </html>`)
     }
 
