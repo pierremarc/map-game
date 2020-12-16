@@ -1,0 +1,54 @@
+.text {
+    .absolute(initial, 0, 0, initial);
+    z-index: 2;
+    background-color: @bg-color;
+    padding: @margin;
+    padding-bottom: 0;
+    height: auto;
+    width: 300px;
+    @media @portrait {
+        width: 100%;
+    }
+
+    .form {
+        // height: 110px;
+        // padding-bottom: @margin;
+        // margin-bottom: @margin;
+        // border-bottom: 1px dotted #000;
+
+        .widget-title {
+            font-family: 'u001_condensed';
+            font-size: 1.5rem;
+            color: @blue;
+        }
+
+        textarea {
+            width: 100%;
+        }
+
+        .btn {
+            margin-top: @margin;
+        }
+    }
+
+    .text-item {
+        font-family: monospace;
+        font-size: 100%;
+        padding: @margin / 2;
+        margin-bottom: @margin / 2;
+        border: 1px solid lightgrey;
+        &.selected {
+            background-color: #eee;
+            cursor: default;
+        }
+    }
+
+    .list {
+        max-height: calc(~'50vh - 110px');
+        overflow-y: auto;
+        padding-bottom: @margin;
+        @media @portrait {
+            max-height: calc(~'50vh - 110px - 65px');
+        }
+    }
+}

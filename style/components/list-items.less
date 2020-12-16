@@ -1,0 +1,25 @@
+.item {
+    width: 32px;
+    height: 32px;
+    background-color: transparent;
+    margin-left: @margin / 2;
+    box-sizing: content-box;
+    border: 3px solid transparent;
+    padding-bottom: 2px;
+
+    &.selected {
+        border-bottom: 3px solid black;
+    }
+
+    &.active {
+        border-bottom: 3px solid lightgrey;
+    }
+
+    img:hover {
+        cursor: grabbing;
+    }
+}
+
+// .items .item:hover {
+//     color: rgb(5, 136, 197);
+// }
