@@ -1,15 +1,22 @@
-import { DIV, H1, TEXT, TEXTAREA, register, DETAILS, SUMMARY, INPUT, registerT } from "./dom"
-
+import { DIV, H1, TEXT, TEXTAREA, register, DETAILS, SUMMARY, INPUT, registerT, A, SPAN, BR } from "./dom"
 
 
 export const layout = () => {
+    const mapTitle = register('title', H1({ class: 'map-title' }))
+    
     const header = DIV({ class: 'header' },
-        register('title', H1({ class: 'map-name' })))
+        DIV({ 'class': 'header-title' }, TEXT('map-log')),
+        mapTitle,
+        DIV({ 'class': 'header-links' }, A({'href':'#'}, TEXT('documentation'))),
+    )
+
 
     const map = register('map', DIV({ id: 'map', 'class': 'map' }));
 
     const items = DIV({ 'class': 'items' },
-        TEXT('Annotate the map, pick a sticker :'),
+        TEXT('Annotate the map,'),
+        BR({}),
+        TEXT('pick a sticker : '),
         register('items', DIV({ 'class': 'item-list' })));
 
     const itemForm = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Add a sticker to the list')),
@@ -31,12 +38,29 @@ export const layout = () => {
             register('text-submit', DIV({ 'class': 'btn btn--submit' }, TEXT('Submit comment'))),
         ),
     )
+
+    const footer = DIV({ 'class': 'footer' },
+        SPAN({}, TEXT('Beta Version - Developped in Brussels by '),
+            A({'href':'https://atelier-cartographique.be'}, TEXT('atelier cartographique')),
+            TEXT(' - Basemap ©'),
+            A({'href':'https://www.openstreetmap.org/copyright/en'}, TEXT('OpenStreetMap Contributors')))
+    )
+
+    const itemsWrapper = DIV({ 'class': 'items-wrapper' },
+        items,
+        itemForm,
+    )
+
+    const main = DIV({ 'class': 'main' },
+        itemsWrapper,
+        map,
+        text
+    )
+
     document.body.appendChild(
-        DIV({ 'class': 'viewport' },
+        DIV({ 'class': 'viewport log' },
             header,
-            items,
-            map,
-            itemForm,
-            text,
+            main,
+            footer
         ))
 }

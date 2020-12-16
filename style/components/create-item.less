@@ -7,18 +7,11 @@ details.create-item summary {
     color: @blue;
 }
 details.create-item {
-    // order: 2;
-    .absolute(initial, initial, 0, @margin);
-    background-color: @bg-color;
     z-index: 2;
     width: 100%;
     max-width: 300px;
     display: flex;
     align-items: center;
-
-    @media @portrait {
-        height: 65px;
-    }
 
     > * {
         flex-shrink: 0;
@@ -43,7 +36,7 @@ details.create-item {
     }
 
     input {
-        max-width: 200px;
+        max-width: 170px;
         border: initial;
         &[type='text'] {
             border: 1px solid @grey-medium;
