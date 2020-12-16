@@ -1,4 +1,4 @@
-import { fromNullable } from "fp-ts/lib/Option";
+import { fromNullable, Option } from "fp-ts/lib/Option";
 
 export const isKeyCode =
     (kc: KeyCode) => (event: KeyboardEvent) => {
@@ -241,6 +241,61 @@ export function removeElement(elem: Node, keepChildren = false) {
     elem.dispatchEvent(evt);
     return elem;
 }
+
+
+interface Detail {
+    'item-file': HTMLInputElement,
+    'item-name': HTMLInputElement,
+    'item-submit': HTMLInputElement,
+    'text-input': HTMLTextAreaElement,
+}
+
+interface Generic {
+    [k: string]: HTMLElement,
+}
+
+
+const genericRegisteredElements: Generic = {};
+const detailedRegisteredElements: Partial<Detail> = {};
+
+export const register = (
+    name: string,
+    el: HTMLElement,
+) => {
+    if (name in genericRegisteredElements) {
+        throw (new Error(`${name} is already registered, you askin for pain`))
+    }
+    genericRegisteredElements[name] = el;
+    return el
+}
+
+
+export const getRegistered = (
+    name: string
+) => fromNullable(genericRegisteredElements[name]);
+
+
+export const registerT = <K extends keyof Detail>(
+    name: K,
+    el: Detail[K],
+) => {
+    if (name in detailedRegisteredElements || name in genericRegisteredElements) {
+        throw (new Error(`${name} is already registered, you askin for pain`))
+    }
+    genericRegisteredElements[name as string] = el as HTMLElement;
+    detailedRegisteredElements[name] = el;
+    return el
+}
+
+
+export const getRegisteredT = <K extends keyof Detail>(
+    name: K
+) => fromNullable(detailedRegisteredElements[name]) as Option<Detail[K]>;
+
+
+
+
+
 
 export function px(val = 0) {
     return `${val.toString()}px`;

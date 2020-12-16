@@ -3,9 +3,10 @@ import * as debug from 'debug';
 import * as uuid from 'uuid';
 import { fromNullable } from 'fp-ts/lib/Option';
 
-import { DIV, TEXTAREA, TEXT, removeClass, addClass } from './dom';
+import { DIV, TEXT, removeClass, addClass, getRegisteredT, getRegistered } from './dom';
 import { WriteData } from '../lib/io';
 import { createStream, createMessageStream } from './stream';
+import { scopeOption } from '../lib/scope';
 
 const logger = debug('ml:text');
 
@@ -19,21 +20,6 @@ export const createTextWidget =
     (user: string) => {
         const selectStream = createStream<string>();
         const textStream = createMessageStream<'write'>();
-        const widget = DIV({ 'class': 'text' });
-        const wtitle = DIV({ 'class': 'widget-title' }, TEXT('Comment the map'));
-        const wdesc = DIV({ 'class': 'widget-desc' }, TEXT('Select a sticker on the map, and write a comment below'));
-        const textList = DIV({ 'class': 'list' });
-        const form = DIV({ 'class': 'form' });
-        const input = TEXTAREA({ 'rows': '4' });
-        const submit = DIV({ 'class': 'btn btn--submit' }, TEXT('Submit comment'));
-        widget.appendChild(form);
-        widget.appendChild(textList);
-        form.appendChild(wtitle);
-        form.appendChild(wdesc);
-        form.appendChild(input);
-        form.appendChild(submit);
-        document.body.appendChild(widget);
-
 
         let currentNode: string | null = null;
         const nodeMap: { [k: string]: Element[] } = {};
@@ -51,9 +37,11 @@ export const createTextWidget =
             selectNode(n);
         };
 
-        const create =
-            () => fromNullable(currentNode)
-                .map((node) => {
+        const create = () =>
+            scopeOption()
+                .let('node', fromNullable(currentNode))
+                .let('input', getRegisteredT('text-input'))
+                .map(({ node, input }) => {
                     const content = input.value;
                     textStream.feed({
                         user,
@@ -63,8 +51,10 @@ export const createTextWidget =
                     });
                     input.value = '';
                 })
-
-        submit.addEventListener('click', create, false);
+        getRegistered('text-submit')
+            .map(submit =>
+                submit.addEventListener('click', create, false)
+            )
 
         const recordNode =
             (id: string, n: Element) => {
@@ -78,12 +68,14 @@ export const createTextWidget =
             }
 
 
-        const appendTextNode =
-            (data: WriteData) => {
-                textList.appendChild(recordNode(data.node, makeTextNode(data)));
-                const height = Array.from(textList.children).reduce((acc, n) => acc + n.getBoundingClientRect().height, 0);
-                textList.scrollTop = height;
-            }
+        const appendTextNode = (data: WriteData) =>
+            getRegistered('text-list')
+                .map((textList) => {
+                    textList.appendChild(recordNode(data.node, makeTextNode(data)));
+                    const height = Array.from(textList.children)
+                        .reduce((acc, n) => acc + n.getBoundingClientRect().height, 0);
+                    textList.scrollTop = height;
+                })
 
         return { setAttachmentNode, appendTextNode, selectNode, selectStream, textStream };
     }

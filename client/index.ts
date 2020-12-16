@@ -2,22 +2,24 @@
 import { connect } from './connection';
 import { createMap } from './map';
 import { createUsers } from './user';
-import { style, px, appendText, emptyElement } from './dom';
+import { style, px, appendText, emptyElement, getRegistered, TEXT } from './dom';
 import { MoveData, SelectData, MessageT, DropData, CitemData, WriteData, ClientConfig } from '../lib/io';
 import { createItemFactory, createItemWidget, createItemNodeFor } from './items';
 import { cons, head } from 'fp-ts/lib/Array';
 import { createTextWidget } from './text';
 import { fromPredicate } from 'fp-ts/lib/Option';
 import { getConfig } from './config';
-import { renderHeader } from './header';
+import { layout } from './layout';
+import uuid = require('uuid');
 
 
 const start =
     (config: ClientConfig) => connect(config)
         .then(({ subscribe, send, user }) => {
-            renderHeader(config.name);
+            layout();
             const moves = subscribe('move');
             const selects = subscribe('select');
+            const deselects = subscribe('deselect');
             const drops = subscribe('drop');
             const citems = subscribe('citem');
             const writes = subscribe('write');
@@ -30,6 +32,8 @@ const start =
             const getSelected = () => head(sm)
             const map = createMap(user, getSelected);
 
+            getRegistered('title').map(el => el.appendChild(TEXT(config.name)))
+
             select.subscribe(s => {
                 sm = cons(s, sm);
                 const ret = send<'select'>(s)
@@ -38,7 +42,17 @@ const start =
             cStream.subscribe(s => send<'citem'>(s));
             textStream.subscribe(s => send<'write'>(s));
             map.move.subscribe(s => send<'move'>(s));
-            map.drop.subscribe(s => send<'drop'>(s));
+            map.drop.subscribe(s => {
+                send<'deselect'>({
+                    user,
+                    id: uuid.v4(),
+                    type: 'deselect',
+                    data: {},
+
+                })
+                sm = []
+                return send<'drop'>(s)
+            });
 
             const moveWithoutMe = fromPredicate<MessageT<"move">>(m => m.user !== user);
 
@@ -57,6 +71,10 @@ const start =
                 const data = s.data as SelectData;
                 emptyElement(elem);
                 appendText(data.item[0])(elem);
+            })))
+
+            deselects(de => de.map(d => userDo(d.user)((elem) => {
+                emptyElement(elem);
             })))
 
             drops(dr => dr.map(d => {

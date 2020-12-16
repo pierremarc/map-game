@@ -18,6 +18,7 @@ export const MessagetTypeIO = u([
     l('connect'),
     l('move'),
     l('select'),
+    l('deselect'),
     l('drop'),
     l('write'),
     l('citem'),
@@ -55,6 +56,9 @@ export const SelectDataIO = i({
 });
 export type SelectData = io.TypeOf<typeof SelectDataIO>;
 
+export const DeSelectDataIO = i({});
+export type DeSelectData = io.TypeOf<typeof DeSelectDataIO>;
+
 
 export const DropDataIO = i({
     x: io.number,
@@ -80,6 +84,7 @@ export type CitemData = io.TypeOf<typeof CitemDataIO>;
 export const ConnectMessageIO = PartialMessageIO(ConnectDataIO, l('connect'));
 export const MoveMessageIO = PartialMessageIO(MoveDataIO, l('move'));
 export const SelectMessageIO = PartialMessageIO(SelectDataIO, l('select'));
+export const DeSelectMessageIO = PartialMessageIO(DeSelectDataIO, l('deselect'));
 export const DropMessageIO = PartialMessageIO(DropDataIO, l('drop'));
 export const WriteMessageIO = PartialMessageIO(WriteDataIO, l('write'));
 export const CitemMessageIO = PartialMessageIO(CitemDataIO, l('citem'));
@@ -87,6 +92,7 @@ export const CitemMessageIO = PartialMessageIO(CitemDataIO, l('citem'));
 export type ConnectMessage = io.TypeOf<typeof ConnectMessageIO>;
 export type MoveMessage = io.TypeOf<typeof MoveMessageIO>;
 export type SelectMessage = io.TypeOf<typeof SelectMessageIO>;
+export type DeSelectMessage = io.TypeOf<typeof DeSelectMessageIO>;
 export type DropMessage = io.TypeOf<typeof DropMessageIO>;
 export type WriteMessage = io.TypeOf<typeof WriteMessageIO>;
 export type CitemMessage = io.TypeOf<typeof CitemMessageIO>;
@@ -106,6 +112,7 @@ export type MessageT<T extends MessageType> =
     T extends 'connect' ? ConnectMessage :
     T extends 'move' ? MoveMessage :
     T extends 'select' ? SelectMessage :
+    T extends 'deselect' ? DeSelectMessage :
     T extends 'drop' ? DropMessage :
     T extends 'write' ? WriteMessage :
     T extends 'citem' ? CitemMessage : unknown

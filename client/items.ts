@@ -1,10 +1,11 @@
 
 import * as debug from 'debug';
 import * as uuid from 'uuid';
-import { DETAILS, DIV, INPUT, IMG, TEXT, CANVAS, removeClass, addClass, SUMMARY } from './dom';
+import { DIV, IMG, CANVAS, removeClass, addClass, getRegistered, getRegisteredT } from './dom';
 import { MessageStreamI, createMessageStream } from './stream';
 import { CitemData } from '../lib/io';
 import { fromNullable } from 'fp-ts/lib/Option';
+import { scopeOption } from '../lib/scope';
 
 const logger = debug('ml:items');
 type Encoded = { [k: string]: string };
@@ -39,44 +40,59 @@ export const createItemNodeFor =
     }
 
 
-const selectableItem =
-    (user: string, s: MessageStreamI<'select'>, root: HTMLElement) =>
-        (item: CitemData) => {
-            const { name, encoded } = item;
-            itemsCache[name] = encoded;
+const selectableItem = (
+    user: string,
+    s: MessageStreamI<'select'>,
+    d: MessageStreamI<'deselect'>,
+) =>
+    (item: CitemData) => {
+        const { name, encoded } = item;
+        itemsCache[name] = encoded;
 
-            const elem = createItemNode(name);
-            elem.addEventListener('click', () => {
-                s.feed({
-                    user,
-                    id: uuid.v4(),
-                    type: 'select',
-                    data: {
-                        item: name,
-                    }
-                });
+        const elem = createItemNode(name);
+        elem.addEventListener('click', () => {
+            s.feed({
+                user,
+                id: uuid.v4(),
+                type: 'select',
+                data: {
+                    item: name,
+                }
+            });
 
-                Array.from(root.children)
-                    .forEach(n => removeClass(n, 'active'));
-                addClass(elem, 'active');
-            }, false);
+            getRegistered('items').map(
+                root => {
+                    Array.from(root.children)
+                        .forEach(n => removeClass(n, 'active'))
 
-            return elem;
-        };
+                    addClass(elem, 'active')
+                    root.appendChild(elem);
+                }
+            )
+        }, false);
+
+        d.subscribe((m) => {
+            getRegistered('items').map(
+                root => {
+                    Array.from(root.children)
+                        .forEach(n => removeClass(n, 'active'))
+                }
+            )
+            return m;
+        })
+    };
 
 export const createItemFactory =
     (user: string) => {
         const select = createMessageStream<'select'>();
-        const root = DIV({ 'class': 'items' }, TEXT('Annotate the map, pick a sticker :'));
-        const builder = selectableItem(user, select, root);
-        document.body.appendChild(root);
+        const deselect = createMessageStream<'deselect'>();
+        const builder = selectableItem(user, select, deselect);
 
-        const createItem =
-            (item: CitemData) =>
-                root.appendChild(builder(item))
+        const createItem = (item: CitemData) => builder(item)
 
         return {
             select,
+            deselect,
             createItem,
         }
     };
@@ -152,48 +168,35 @@ const markable =
 export const createItemWidget =
     (user: string) => {
         const stream = createMessageStream<'citem'>();
-        // const widget = DIV({ 'class': 'create-item' });
-        const widget = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Add a sticker to the list')));
-        const wtitle = DIV({ 'class': 'widget-title' }, TEXT('Upload an image to add a new sticker to the list (.jpg or .png).'));
-        const wstep1 = DIV({ 'class': 'create-step' }, TEXT('1'));
-        const finput = INPUT({ 'type': 'file' });
-        const wstep2 = DIV({ 'class': 'create-step' }, TEXT('2'));
-        const ninput = INPUT({ 'type': 'text', 'placeholder': 'give it a name' });
-        const wstep3 = DIV({ 'class': 'create-step' }, TEXT('3'));
-        const submit = DIV({ 'class': 'btn btn--submit' }, TEXT('Create sticker'));
-
-        const create =
-            () =>
-                fromNullable(finput.files)
-                    .map(files => files[0])
-                    .map(f =>
-                        markable(f)
-                            .then(o => o.map((encoded) => {
-                                const name = ninput.value.trim();
-                                if (name.length > 0) {
-                                    stream.feed({
-                                        user,
-                                        id: uuid(),
-                                        type: 'citem',
-                                        data: {
-                                            name,
-                                            encoded,
-                                        }
-                                    })
-                                }
-                                ninput.value = '';
-                            })));
 
 
-        submit.addEventListener('click', create, false);
-        widget.appendChild(wtitle);
-        widget.appendChild(wstep1);
-        widget.appendChild(finput);
-        widget.appendChild(wstep2);
-        widget.appendChild(ninput);
-        widget.appendChild(wstep3);
-        widget.appendChild(submit);
-        document.body.appendChild(widget);
+        const create = () =>
+            scopeOption()
+                .let('files', getRegisteredT('item-file').chain(input => fromNullable(input.files)))
+                .let('name', getRegisteredT('item-name').map(input => input.value.trim()))
+                .map(({ files, name }) => {
+                    markable(files[0])
+                        .then(o => o.map((encoded) => {
+                            if (name.length > 0) {
+                                stream.feed({
+                                    user,
+                                    id: uuid(),
+                                    type: 'citem',
+                                    data: {
+                                        name,
+                                        encoded,
+                                    }
+                                })
+                            }
+                            getRegisteredT('item-name').map(input => input.value = '')
+                        }))
+                })
+
+
+        getRegisteredT('item-submit')
+            .map(submit =>
+                submit.addEventListener('click', create, false)
+            )
 
         return stream;
 
