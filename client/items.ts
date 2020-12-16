@@ -1,7 +1,7 @@
 
 import * as debug from 'debug';
 import * as uuid from 'uuid';
-import { DIV, IMG, CANVAS, removeClass, addClass, getRegistered, getRegisteredT } from './dom';
+import { DIV, IMG, CANVAS, removeClass, addClass, getRegistered, getRegisteredT, TEXT } from './dom';
 import { MessageStreamI, createMessageStream } from './stream';
 import { CitemData } from '../lib/io';
 import { fromNullable } from 'fp-ts/lib/Option';
@@ -21,10 +21,14 @@ const createItemNode =
         },
             IMG({
                 src: itemsCache[c],
-            }));
+            }),
+        );
         node.style.width = `${markSize}px`;
         node.style.height = `${markSize}px`;
-        return node;
+        const wrapper = DIV({
+            'class': 'item-wrapper'
+        }, node, TEXT(c))
+        return wrapper;
     }
 
 
@@ -64,10 +68,15 @@ const selectableItem = (
                 root => {
                     Array.from(root.children)
                         .forEach(n => removeClass(n, 'active'))
-
                     addClass(elem, 'active')
                 }
             )
+
+            getRegistered('map')
+                .map(map => {
+                    const st = map.style;
+                    st.cursor = `url(${encoded}) ${markSize / 2} ${markSize / 2}, pointer`;
+                })
         }, false);
 
         getRegistered('items')
@@ -80,6 +89,11 @@ const selectableItem = (
                         .forEach(n => removeClass(n, 'active'))
                 }
             )
+            getRegistered('map')
+                .map(map => {
+                    const st = map.style;
+                    st.cursor = `pointer`;
+                })
             return m;
         })
     };

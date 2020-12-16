@@ -3,7 +3,7 @@ import { connect } from './connection';
 import { createMap } from './map';
 import { createUsers } from './user';
 import { style, px, appendText, emptyElement, getRegistered, TEXT } from './dom';
-import { MoveData, SelectData, MessageT, DropData, CitemData, WriteData, ClientConfig } from '../lib/io';
+import { MoveData, SelectData, MessageT, DropData, CitemData, WriteData, ClientConfig, DeSelectMessage } from '../lib/io';
 import { createItemFactory, createItemWidget, createItemNodeFor } from './items';
 import { cons, head } from 'fp-ts/lib/Array';
 import { createTextWidget } from './text';
@@ -24,7 +24,7 @@ const start =
             const citems = subscribe('citem');
             const writes = subscribe('write');
             const { userDo } = createUsers();
-            const { select, createItem } = createItemFactory(user);
+            const { deselect, select, createItem } = createItemFactory(user);
             const cStream = createItemWidget(user);
             const { setAttachmentNode, appendTextNode, selectStream, textStream } = createTextWidget(user);
 
@@ -43,14 +43,18 @@ const start =
             textStream.subscribe(s => send<'write'>(s));
             map.move.subscribe(s => send<'move'>(s));
             map.drop.subscribe(s => {
-                send<'deselect'>({
-                    user,
-                    id: uuid.v4(),
-                    type: 'deselect',
-                    data: {},
+                if (user === s.user) {
+                    const m: DeSelectMessage = {
+                        user,
+                        id: uuid.v4(),
+                        type: 'deselect',
+                        data: {},
 
-                })
-                sm = []
+                    };
+                    sm = []
+                    send<'deselect'>(m)
+                    deselect.feed(m)
+                }
                 return send<'drop'>(s)
             });
 
@@ -73,9 +77,11 @@ const start =
                 appendText(data.item[0])(elem);
             })))
 
-            deselects(de => de.map(d => userDo(d.user)((elem) => {
-                emptyElement(elem);
-            })))
+            deselects(de => de.map(d => {
+                userDo(d.user)((elem) => {
+                    emptyElement(elem);
+                })
+            }))
 
             drops(dr => dr.map(d => {
                 const data = d.data as DropData;
