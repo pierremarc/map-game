@@ -20,7 +20,7 @@ export const layout = () => {
         TEXT('Annotate the map,'),
         BR({}),
         TEXT('pick a sticker : '),
-        register('items', DIV({ 'class': 'item-list' },register('deselect', DIV({ 'class': 'deselect' }, TEXT('+'))))),
+        register('items', DIV({ 'class': 'item-list' },register('deselect', DIV({ 'class': 'deselect' , 'title':'deselect'}, TEXT('+'))))),
     );
 
     const itemForm = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Add a sticker to the list')),
