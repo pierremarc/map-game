@@ -14,13 +14,14 @@ export const WEBSOCKET_PORT = 3334
 interface UserSession {
     id: string;
     socket: ws;
+    alive: boolean;
     map: Option<string>;
 }
 
 const newSession = (
     id: string,
     socket: ws,
-): UserSession => ({ id, socket, map: none })
+): UserSession => ({ id, socket, alive: true, map: none })
 
 export const startWS = (
     server: Server,
@@ -54,6 +55,26 @@ export const startWS = (
 
     const addFileToSession = (user: string, map: string) => mapSession((s) => ({ ...s, map: some(map) }))(user)
 
+    const beat = setInterval(() => {
+        const deadSessions = sessions.filter(s => !s.alive);
+        deadSessions.forEach(s => {
+            s.socket.terminate();
+            removeSession(s.id);
+        })
+        sessions.forEach(s => {
+            s.alive = false
+            s.socket.ping()
+        })
+
+    }, 30000)
+
+
+    wss.on('close', () => {
+        clearInterval(beat)
+        sessions.forEach(s => s.socket.terminate())
+    })
+
+
     const broadcast = (
         mapName: string,
         msg: string,
@@ -63,6 +84,15 @@ export const startWS = (
             .getOrElse(false))
         .forEach(({ socket }) => opened(socket)
             .map(xo => xo.send(msg)));
+
+
+    const onPong = (
+        user: string,
+    ) => () => {
+        console.log(`PONG> ${user}`);
+        mapSession((s) => ({ ...s, alive: true }))(user)
+    }
+
 
     const onConnect = (
         { data, user }: ConnectMessage
@@ -132,6 +162,8 @@ export const startWS = (
     wss.on('connection', (socket, _req) => {
         const id = uuid();
         addSession(newSession(id, socket))
+
+        socket.on('pong', onPong(id));
 
         socket.on('message', (msg) => {
             try {

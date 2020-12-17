@@ -44,27 +44,27 @@ interface Connect {
     user: string;
 }
 
+
+type ConnectionStatus = 'initial' | 'connected' | 'lost';
+
+
 export const connect =
     (config: ClientConfig) => new Promise<Connect>((resolve, _reject) => {
         const ws = new WebSocket(checkScheme(config.websocket));
         const handlers: HandlerRec<MessageType>[] = [];
-        let connected = false;
-        ws.onclose = (ev) => {
-            console.log(`[WS Closed] ${ev.code}: ${ev.reason}`)
+        let status: ConnectionStatus = 'initial';
+        ws.onclose = (_ev) => {
+            status = 'lost'
         }
         ws.onerror = err => console.error(err);
-        ws.onmessage =
-            (m) => {
-                try {
-                    const data = JSON.parse(m.data);
-                    if (connected) {
-                        MessageIO.decode(data)
-                            .map(msg => handlers.map(applyHandler(msg)))
-                    }
-                    else {
+        ws.onmessage = (m) => {
+            try {
+                const data = JSON.parse(m.data);
+                switch (status) {
+                    case 'initial': {
                         HeloMessageIO.decode(data)
                             .map(({ user }) => {
-                                connected = true;
+                                status = 'connected';
                                 send({
                                     type: 'connect',
                                     id: uuid.v4(),
@@ -74,13 +74,23 @@ export const connect =
                                     }
                                 })
                                 resolve({ subscribe, send, user });
-                            })
+                            });
+                        break
+                    }
+                    case 'connected': {
+                        MessageIO.decode(data)
+                            .map(msg => handlers.map(applyHandler(msg)));
+                        break
+                    }
+                    case 'lost': {
+                        console.log(`I'm lost`)
                     }
                 }
-                catch (err) {
-                    console.error(`data didnt deserialize [${m.data}]`)
-                }
             }
+            catch (err) {
+                console.error(`data didnt deserialize [${m.data}]`)
+            }
+        }
 
         const subscribe =
             <T extends MessageType>(t: T) =>
