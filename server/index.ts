@@ -85,15 +85,21 @@ const startLog =
                 name => {
                     console.log('name', name)
                     const slug = slugify(name.slice(0, 128));
-                    registerRoute(rootDir, router, slug)
-                        .then(path => response.redirect(path))
+                    const mapExists = getLogRecords().find(l => l.name === slug);
+                    if (mapExists !== undefined) {
+                        response.redirect(mapExists.url)
+                    }
+                    else {
+                        registerRoute(rootDir, router, slug)
+                            .then(path => response.redirect(path))
+                    }
                 }
             )
 
 
 const index =
     (_request: e.Request, response: e.Response) => {
-        const rs = getLogRecords().map(({ name, url }) => `<p><a href="${url}">${name}</a></p>`).join('\n');
+        // const rs = getLogRecords().map(({ name, url }) => `<p><a href="${url}">${name}</a></p>`).join('\n');
         response.send(`<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
@@ -112,12 +118,10 @@ const index =
         <div class='pitch'>free, no-account needed & open-source</div>
 
         <form action="/createlog/" method="get">
-        <h2>Create a new map</h2>
+        <h2>Join a map</h2>
         <input type="text" placeholder="Give it a name" name="name" />
-        <input type="submit" value="Create it" />
+        <input type="submit" value="Join" />
         </form>
-
-        ${rs}        
     </div>
     
 

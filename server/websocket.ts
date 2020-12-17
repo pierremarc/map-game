@@ -58,6 +58,7 @@ export const startWS = (
     const beat = setInterval(() => {
         const deadSessions = sessions.filter(s => !s.alive);
         deadSessions.forEach(s => {
+            console.log(`TERMINATE> ${s.id}`)
             s.socket.terminate();
             removeSession(s.id);
         })
