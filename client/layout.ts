@@ -15,7 +15,7 @@ export const layout = () => {
     )
 
     const header = DIV({ class: 'header' },
-        DIV({ 'class': 'header-logo' }, TEXT('map-log')),
+        DIV({ 'class': 'header-logo' }, A({ href: '/' }, TEXT('map-log'))),
         mapTitle,
         headerLinks
     )
