@@ -4,13 +4,20 @@ import { DIV, H1, TEXT, TEXTAREA, register, DETAILS, SUMMARY, INPUT, registerT, 
 export const layout = () => {
     const mapTitle = register('title', H1({ class: 'map-title' }))
 
-    const header = DIV({ class: 'header' },
-        DIV({ 'class': 'header-title' }, TEXT('map-log')),
-        mapTitle,
-        DIV({ 'class': 'header-links' }, A({ 'href': '#' }, TEXT('documentation'))),
+    const headerLinks = DIV({ class: 'header-links' },
         DIV({ 'class': 'log-link' }, A({
             href: document.URL
-        }, TEXT('permalink')))
+        }, TEXT('map permalink'))),
+        DIV({ 'class': 'log-link' }, A({
+            href: document.URL + '.geojson'
+        }, TEXT('download map data'))),
+        DIV({ 'class': 'log-link' }, A({ 'href': '#' }, TEXT('documentation'))),
+    )
+
+    const header = DIV({ class: 'header' },
+        DIV({ 'class': 'header-logo' }, TEXT('map-log')),
+        mapTitle,
+        headerLinks
     )
 
 

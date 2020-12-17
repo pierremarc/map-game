@@ -16,16 +16,20 @@
         .items-wrapper,
         .text {
             .neumorph();
-            width: 250px;
+            width: @sidebarW;
             flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         .items-wrapper {
             border-top-left-radius: initial;
             border-bottom-left-radius: initial;
+            border-left: 0px;
         }
 
         .text {
+            border-right: 0px;
             border-top-right-radius: initial;
             border-bottom-right-radius: initial;
         }

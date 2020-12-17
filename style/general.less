@@ -12,12 +12,12 @@ body {
     flex-direction: column;
     // background-color: #f8f8f8;
     color: @black;
-    background: linear-gradient(-135deg, #eee, #f8f8f8);
+    background: linear-gradient(325deg, #ddd, #f0f0f0);
 }
 
 h1 {
     margin: 0;
-    font-size: 4rem;
+    font-size: 3rem;
 }
 
 details summary {
@@ -32,6 +32,23 @@ details summary {
 .header {
     height: initial;
     padding: @margin / 2 0;
+    justify-content: flex-start;
+
+    .header-logo {
+        font-family: 'u001_condensed';
+        font-size: 1.5rem;
+        width: calc(~'@{sidebarW} + @{margin} * 2');
+    }
+
+    .header-links {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+
+        > div {
+            margin-left: @margin;
+        }
+    }
 }
 
 .footer {
@@ -39,9 +56,4 @@ details summary {
     justify-content: flex-end;
     height: initial;
     padding: @margin / 3 0;
-}
-
-.header .header-title {
-    font-family: 'u001_condensed';
-    font-size: 1.5rem;
 }

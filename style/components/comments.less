@@ -1,5 +1,4 @@
 .text {
-    .neumorph();
     border-top-right-radius: initial;
     border-bottom-right-radius: initial;
 
@@ -15,7 +14,7 @@
         }
 
         .btn {
-            margin-top: @margin;
+            margin: @margin 0;
         }
     }
 
@@ -38,11 +37,7 @@
     }
 
     .list {
-        max-height: calc(~'50vh - 110px');
         overflow-y: auto;
         padding-bottom: @margin;
-        @media @portrait {
-            max-height: calc(~'50vh - 110px - 65px');
-        }
     }
 }
