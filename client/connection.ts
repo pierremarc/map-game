@@ -79,7 +79,8 @@ export const connect =
                     }
                     case 'connected': {
                         MessageIO.decode(data)
-                            .map(msg => handlers.map(applyHandler(msg)));
+                            .map(msg => handlers.map(applyHandler(msg)))
+                            .fold((errs) => console.error(`DecodeError(${data.kind})`, errs), () => { });
                         break
                     }
                     case 'lost': {

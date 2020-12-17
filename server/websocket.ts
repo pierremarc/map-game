@@ -107,6 +107,7 @@ export const startWS = (
                             case 'node': return socket.send(JSON.stringify(nodeToJSON(r)))
                             case 'text': return socket.send(JSON.stringify(textToJSON(r)))
                             case 'symbol': return socket.send(JSON.stringify(symbolToJSON(r)))
+                            case 'delete': return socket.send(JSON.stringify(deleteToJSON(r)))
                         }
                     });
                 })
