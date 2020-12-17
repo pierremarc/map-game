@@ -115,7 +115,7 @@ const index =
     </div>
     <div class='main'>
         <h1>Collaborative mapping </br> & territorial annotation</h1>
-        <div class='pitch'>free, no-account needed & open-source</div>
+        <div class='pitch'>free, no-account needed & <a href="https://github.com/pierremarc/map-game" title="Git Repository">open-source</a></div>
 
         <form action="/createlog/" method="get">
         <h2>Join a map</h2>
