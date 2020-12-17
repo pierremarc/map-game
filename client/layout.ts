@@ -32,8 +32,8 @@ export const layout = () => {
         register('items', DIV({ 'class': 'item-list' }, register('deselect', DIV({ 'class': 'deselect', 'title': 'deselect' }, TEXT('+'))))),
     );
 
-    const itemForm = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Add a sticker to the list')),
-        DIV({ 'class': 'widget-title' }, TEXT('Upload an image to add a new sticker to the list (.jpg or .png).')),
+    const itemForm = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Create a new sticker')),
+        DIV({ 'class': 'widget-title' }, TEXT('Upload an image that will be used as a sticker (.jpg or .png).')),
         DIV({ 'class': 'create-step' }, TEXT('1')),
         registerT('item-file', INPUT({ 'type': 'file' })),
         DIV({ 'class': 'create-step' }, TEXT('2')),
