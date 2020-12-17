@@ -51,7 +51,13 @@ const registerRoute =
                         const jsonpath = `/${name}.geojson`
                         const jsoncors = cors({ origin: (origin, callback) => callback(null, true) })
                         r.options(jsonpath, jsoncors)
-                        r.get(jsonpath, jsoncors, (rq, rs) => rs.send(lf.json()))
+                        r.get(jsonpath, jsoncors, (rq, rs) => {
+                            rs.set({
+                                'content-disposition': `attachment;filename=${name}.geojson`,
+                                'content-type': 'application/json',
+                            })
+                            rs.send(lf.json())
+                        })
 
                         console.log(`Added GeoJSON "/${name}.geojson" `)
 
