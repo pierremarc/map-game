@@ -34,13 +34,13 @@
             border-bottom-right-radius: initial;
         }
 
-        .map {
+        .map-wrapper {
             margin: 0 @margin * 3;
         }
     }
 }
 
-.map {
+.map-wrapper {
     position: relative !important;
     padding: @margin;
     border-radius: @margin * 2;
@@ -49,7 +49,7 @@
     margin-bottom: @margin;
     overflow: hidden;
 }
-.map:before {
+.map-wrapper:before {
     content: ' ';
     .absolute(0,0,0,0);
     .neumorph();
@@ -107,7 +107,7 @@
     }
 }
 
-.map .item-wrapper {
+.map-wrapper .item-wrapper {
     .item {
         margin: 0;
         padding: 0;

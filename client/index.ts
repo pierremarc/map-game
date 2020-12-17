@@ -81,10 +81,19 @@ const start =
             moves(mo => mo.chain(moveWithoutMe).map(m => userDo(m.user)((elem) => {
                 const { width, height } = elem.getBoundingClientRect();
                 const { x, y } = m.data as MoveData;
-                const pos = map.olMap.getPixelFromCoordinate([x, y])
+                const { left, top, right, bottom } = map.olMap.getViewport().getBoundingClientRect();
+                const mapPos = map.olMap.getPixelFromCoordinate([x, y])
+                const [mapx, mapy] = (() => {
+                    const x = (left + mapPos[0]) - (width / 2)
+                    const y = (top + mapPos[1]) - (height / 2)
+                    return [
+                        Math.min(Math.max(x, left), right),
+                        Math.min(Math.max(y, top), bottom),
+                    ]
+                })()
                 style(elem, {
-                    top: px(pos[1] - (height / 2)),
-                    left: px(pos[0] - (width / 2)),
+                    top: px(mapy),
+                    left: px(mapx),
                 });
             })));
 

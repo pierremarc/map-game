@@ -21,13 +21,14 @@ export const layout = () => {
     )
 
 
-    const map = register('map', DIV({ id: 'map', 'class': 'map' }));
+    const map = DIV({ 'class': 'map-wrapper' },
+        register('map', DIV({ id: 'map', 'class': 'map' })));
 
     const items = DIV({ 'class': 'items' },
         TEXT('Annotate the map,'),
         BR({}),
         TEXT('pick a sticker : '),
-        register('items', DIV({ 'class': 'item-list' },register('deselect', DIV({ 'class': 'deselect' , 'title':'deselect'}, TEXT('+'))))),
+        register('items', DIV({ 'class': 'item-list' }, register('deselect', DIV({ 'class': 'deselect', 'title': 'deselect' }, TEXT('+'))))),
     );
 
     const itemForm = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Add a sticker to the list')),
