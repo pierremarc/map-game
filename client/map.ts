@@ -49,6 +49,10 @@ export const createMap =
                 olMap.render();
             }
 
+        const removeOverlay = (id: string) => {
+            olMap.removeOverlay(olMap.getOverlayById(id))
+        }
+
         const selectItem =
             (id: string) => {
                 olMap.getOverlays().forEach(o => removeClass(o.getElement(), 'selected'));
@@ -92,5 +96,5 @@ export const createMap =
                 olMap.setTarget(root);
             })
 
-        return { move, drop, olMap, addOverlay, selectItem };
+        return { move, drop, olMap, addOverlay, removeOverlay, selectItem };
     }

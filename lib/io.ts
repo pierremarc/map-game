@@ -22,6 +22,7 @@ export const MessagetTypeIO = u([
     l('drop'),
     l('write'),
     l('citem'),
+    l('delete'),
 ], 'MessagetTypeIO');
 export type MessageType = io.TypeOf<typeof MessagetTypeIO>;
 
@@ -80,6 +81,11 @@ export const CitemDataIO = i({
 })
 export type CitemData = io.TypeOf<typeof CitemDataIO>;
 
+export const DeleteDataIO = i({
+    node: io.string,
+})
+export type DeleteData = io.TypeOf<typeof DeleteDataIO>
+
 
 export const ConnectMessageIO = PartialMessageIO(ConnectDataIO, l('connect'));
 export const MoveMessageIO = PartialMessageIO(MoveDataIO, l('move'));
@@ -88,6 +94,7 @@ export const DeSelectMessageIO = PartialMessageIO(DeSelectDataIO, l('deselect'))
 export const DropMessageIO = PartialMessageIO(DropDataIO, l('drop'));
 export const WriteMessageIO = PartialMessageIO(WriteDataIO, l('write'));
 export const CitemMessageIO = PartialMessageIO(CitemDataIO, l('citem'));
+export const DeleteMessageIO = PartialMessageIO(DeleteDataIO, l('delete'));
 
 export type ConnectMessage = io.TypeOf<typeof ConnectMessageIO>;
 export type MoveMessage = io.TypeOf<typeof MoveMessageIO>;
@@ -96,14 +103,17 @@ export type DeSelectMessage = io.TypeOf<typeof DeSelectMessageIO>;
 export type DropMessage = io.TypeOf<typeof DropMessageIO>;
 export type WriteMessage = io.TypeOf<typeof WriteMessageIO>;
 export type CitemMessage = io.TypeOf<typeof CitemMessageIO>;
+export type DeleteMessage = io.TypeOf<typeof DeleteMessageIO>;
 
 export const MessageIO = u([
     ConnectMessageIO,
     MoveMessageIO,
     SelectMessageIO,
+    DeSelectMessageIO,
     DropMessageIO,
     WriteMessageIO,
     CitemMessageIO,
+    DeleteMessageIO,
 ], 'UntypedMessageIO')
 
 export type Message = io.TypeOf<typeof MessageIO>;
@@ -115,7 +125,8 @@ export type MessageT<T extends MessageType> =
     T extends 'deselect' ? DeSelectMessage :
     T extends 'drop' ? DropMessage :
     T extends 'write' ? WriteMessage :
-    T extends 'citem' ? CitemMessage : unknown
+    T extends 'citem' ? CitemMessage :
+    T extends 'delete' ? DeleteMessage : unknown
     ;
 
 export const HeloMessageIO = i({

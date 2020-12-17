@@ -6,6 +6,7 @@ import * as io from 'io-ts';
 
 import { LogRecordIO, writeRecord, LogRecord, Node, isNode, isText, Position } from './record';
 import { FeatureCollection, Feature } from 'geojson-iots';
+import { fromNullable, Option } from 'fp-ts/lib/Option';
 
 
 
@@ -84,6 +85,8 @@ export interface LogFile {
     log: <T extends LogRecord>(r: T) => T;
     sync(): Promise<void>;
     json(): FeatureCollection;
+    find(f: (r: LogRecord) => boolean): Option<LogRecord>;
+    filter(f: (r: LogRecord) => boolean): LogRecord[];
 }
 
 const validate =
@@ -131,9 +134,11 @@ export const initLogFile =
         const records = readLog(path);
         let op: Task<void> = new Task(() => Promise.resolve());
 
-        const tell =
-            () => records.slice(0);
+        const tell = () => records.slice(0);
 
+        const find = (f: (r: LogRecord) => boolean) => fromNullable(tell().find(f));
+
+        const filter = (f: (r: LogRecord) => boolean) => tell().filter(f);
 
         const sync =
             () => {
@@ -168,6 +173,6 @@ export const initLogFile =
                     op = op.chain(() => writeRecord(r, fd));
                     return r;
                 };
-            return { tell, log, sync, json };
+            return { tell, log, sync, json, find, filter };
         })
     };

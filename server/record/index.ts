@@ -5,12 +5,14 @@ import * as io from 'io-ts';
 import { NodeIO, Node } from './node';
 import { TextIO, Text } from './text';
 import { MapSymbolIO, MapSymbol } from './symbol';
+import { Delete, DeleteIO } from './delete';
 import { fromNullable } from 'fp-ts/lib/Option';
 import { LogFile } from '../log';
 
 export * from './node';
 export * from './text';
 export * from './symbol';
+export * from './delete';
 
 
 
@@ -18,6 +20,7 @@ export interface LogRecordMap {
     'node': Node;
     'text': Text;
     'symbol': MapSymbol;
+    'delete': Delete,
 }
 export type LogRecordKind = keyof LogRecordMap;
 
@@ -25,6 +28,7 @@ export const LogRecordIO = io.union([
     NodeIO,
     TextIO,
     MapSymbolIO,
+    DeleteIO,
 ], 'LogRecord')
 
 export type LogRecord = io.TypeOf<typeof LogRecordIO>;
@@ -47,6 +51,7 @@ export const writeRecord =
 export const isNode = (r: LogRecord): r is Node => r.kind === 'node';
 export const isText = (r: LogRecord): r is Text => r.kind === 'text';
 export const isSymbol = (r: LogRecord): r is MapSymbol => r.kind === 'symbol';
+export const isDelete = (r: LogRecord): r is Delete => r.kind === 'delete';
 
 
 interface LogRecordItem {

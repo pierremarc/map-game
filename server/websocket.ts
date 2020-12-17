@@ -2,8 +2,8 @@ import * as ws from 'ws';
 import * as uuid from 'uuid';
 import { Server } from 'http';
 import { fromPredicate, Option, none, fromNullable, some } from 'fp-ts/lib/Option';
-import { MessageIO, ConnectMessage, DropMessage, WriteMessage, CitemMessage, Message } from '../lib/io';
-import { createNode, createText, createSymbol, nodeToJSON, textToJSON, symbolToJSON, findLogRecord } from './record';
+import { MessageIO, ConnectMessage, DropMessage, WriteMessage, CitemMessage, Message, DeleteMessage } from '../lib/io';
+import { createNode, createText, createSymbol, nodeToJSON, textToJSON, symbolToJSON, findLogRecord, createDelete, deleteToJSON } from './record';
 
 
 const opened = fromPredicate((x: ws) => x.readyState === ws.OPEN);
@@ -123,6 +123,17 @@ export const startWS = (
             file.sync()
         })
 
+    const onDelete = (
+        { user, data }: DeleteMessage
+    ) => findSession(user)
+        .chain(({ map }) => map.chain(findLogRecord))
+        .map(({ name, file }) => file.find((r) => r.kind === 'node' && r.session === user).map((_) => {
+            const record = file.log(
+                createDelete(data.node, user))
+            broadcast(name, JSON.stringify(deleteToJSON(record)))
+            file.sync()
+        }))
+
     const onWrite = (
         { user, data }: WriteMessage
     ) => findSession(user)
@@ -137,15 +148,7 @@ export const startWS = (
     const onCitem = (
         { user, data }: CitemMessage
     ) => findSession(user)
-        .orElse(() => {
-            console.log('!! did not find session')
-            return none
-        })
         .chain(({ map }) => map.chain(findLogRecord))
-        .orElse(() => {
-            console.log('!! did not find record')
-            return none
-        })
         .map(({ name, file }) => {
             const record = file.log(
                 createSymbol(data.name, data.encoded, user))
@@ -180,6 +183,7 @@ export const startWS = (
                             case 'drop': return onDrop(message);
                             case 'write': return onWrite(message);
                             case 'citem': return onCitem(message);
+                            case 'delete': return onDelete(message);
                             default: return onOther(message)
                         }
                     })

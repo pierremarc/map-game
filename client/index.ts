@@ -3,8 +3,8 @@ import { connect } from './connection';
 import { createMap } from './map';
 import { createUsers } from './user';
 import { style, px, appendText, emptyElement, getRegistered, TEXT } from './dom';
-import { MoveData, SelectData, MessageT, DropData, CitemData, WriteData, ClientConfig, DeSelectMessage } from '../lib/io';
-import { createItemFactory, createItemWidget, createItemNodeFor } from './items';
+import { MoveData, SelectData, MessageT, ClientConfig, DeSelectMessage } from '../lib/io';
+import { createItemFactory, createItemWidget, createItemNodeFor, createDeletableItemNodeFor } from './items';
 import { cons, head } from 'fp-ts/lib/Array';
 import { createTextWidget } from './text';
 import { fromPredicate } from 'fp-ts/lib/Option';
@@ -23,6 +23,7 @@ const start =
             const drops = subscribe('drop');
             const citems = subscribe('citem');
             const writes = subscribe('write');
+            const deletes = subscribe('delete');
             const { userDo } = createUsers();
             const { deselect, select, createItem } = createItemFactory(user);
             const cStream = createItemWidget(user);
@@ -64,7 +65,6 @@ const start =
                         id: uuid.v4(),
                         type: 'deselect',
                         data: {},
-
                     };
                     sm = []
                     send<'deselect'>(m)
@@ -110,15 +110,35 @@ const start =
             }))
 
             drops(dr => dr.map(d => {
-                const data = d.data as DropData;
-                map.addOverlay(
-                    d.id,
-                    createItemNodeFor(data.item,
-                        () => {
-                            setAttachmentNode(d.id);
-                            map.selectItem(d.id);
-                        }),
-                    [data.x, data.y]);
+                const data = d.data;
+                const node = (() => {
+                    if (d.user === user) {
+                        return createDeletableItemNodeFor(data.item,
+                            () => {
+                                setAttachmentNode(d.id);
+                                map.selectItem(d.id);
+                            },
+                            () => {
+                                send<'delete'>({
+                                    user,
+                                    id: uuid.v4(),
+                                    type: 'delete',
+                                    data: {
+                                        node: d.id
+                                    },
+                                })
+                            })
+                    }
+                    else {
+                        return createItemNodeFor(data.item,
+                            () => {
+                                setAttachmentNode(d.id);
+                                map.selectItem(d.id);
+                            })
+                    }
+                })();
+
+                map.addOverlay(d.id, node, [data.x, data.y]);
             }))
 
             selectStream.subscribe((nid) => {
@@ -127,11 +147,11 @@ const start =
                 return nid;
             });
 
-            citems(ci => ci.map(({ data }) => createItem(data as CitemData)))
+            citems(ci => ci.map(({ data }) => createItem(data)))
 
-            writes(wr => wr.map(w => appendTextNode(w.data as WriteData)))
+            writes(wr => wr.map(w => appendTextNode(w.data)))
 
-
+            deletes(del => del.map(({ data }) => map.removeOverlay(data.node)))
         });
 
 

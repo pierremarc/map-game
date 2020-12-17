@@ -43,6 +43,24 @@ export const createItemNodeFor =
         return node;
     }
 
+export const createDeletableItemNodeFor =
+    (c: string, h: () => void, d: () => void) => {
+        const node = createItemNode(c);
+        node.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            h();
+        }, false);
+        const action = DIV({ 'class': 'delete' }, TEXT('×'))
+        action.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            d();
+        }, false)
+        const wrapper = DIV({ 'class': 'd-item' }, node, action)
+        return wrapper;
+    }
+
 
 const selectableItem = (
     user: string,
