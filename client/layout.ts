@@ -36,7 +36,7 @@ export const layout = () => {
         DIV({ 'class': 'create-step' }, TEXT('1')),
         registerT('item-file', INPUT({ 'type': 'file' })),
         DIV({ 'class': 'create-step' }, TEXT('2')),
-        register('item-name', INPUT({ 'type': 'text', 'placeholder': 'give it a name' })),
+        registerT('item-name', INPUT({ 'type': 'text', 'placeholder': 'give it a name' })),
         DIV({ 'class': 'create-step' }, TEXT('3')),
         register('item-submit', DIV({ 'class': 'btn btn--submit' }, TEXT('Create sticker'))),
     )

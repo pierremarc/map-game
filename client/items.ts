@@ -209,7 +209,7 @@ export const createItemWidget =
                 })
 
 
-        getRegisteredT('item-submit')
+        getRegistered('item-submit')
             .map(submit =>
                 submit.addEventListener('click', create, false)
             )

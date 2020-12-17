@@ -248,7 +248,6 @@ export function removeElement(elem: Node, keepChildren = false) {
 interface Detail {
     'item-file': HTMLInputElement,
     'item-name': HTMLInputElement,
-    'item-submit': HTMLInputElement,
     'text-input': HTMLTextAreaElement,
 }
 
