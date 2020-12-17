@@ -11,7 +11,7 @@ export const layout = () => {
         DIV({ 'class': 'log-link' }, A({
             href: document.URL + '.geojson'
         }, TEXT('download map data'))),
-        DIV({ 'class': 'log-link' }, A({ 'href': '#' }, TEXT('documentation'))),
+        DIV({ 'class': 'log-link' }, A({ 'href': 'https://github.com/pierremarc/map-game/blob/master/documentation/maplog.md' }, TEXT('documentation'))),
     )
 
     const header = DIV({ class: 'header' },

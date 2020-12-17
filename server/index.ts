@@ -110,7 +110,7 @@ const index =
     <div class='header'>
         <div class='header-logo'>map-log</div>            
         <div class='header-links'>
-            <a href='#'>documentation</a>
+            <a href='https://github.com/pierremarc/map-game/blob/master/documentation/maplog.md'>documentation</a>
         </div>            
     </div>
     <div class='main'>
