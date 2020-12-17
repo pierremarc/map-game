@@ -1,4 +1,4 @@
-import { DIV, H1, TEXT, TEXTAREA, register, DETAILS, SUMMARY, INPUT, registerT, A, SPAN, BR } from "./dom"
+import { DIV, H1, TEXT, TEXTAREA, register, DETAILS, SUMMARY, INPUT, registerT, A, SPAN, BR, H2 } from "./dom"
 
 
 export const layout = () => {
@@ -25,9 +25,10 @@ export const layout = () => {
         register('map', DIV({ id: 'map', 'class': 'map' })));
 
     const items = DIV({ 'class': 'items' },
-        TEXT('Annotate the map,'),
-        BR({}),
-        TEXT('pick a sticker : '),
+        H2({},
+            TEXT('Annotate the map,'),
+            BR({}),
+            TEXT('pick a sticker')),
         register('items', DIV({ 'class': 'item-list' }, register('deselect', DIV({ 'class': 'deselect', 'title': 'deselect' }, TEXT('+'))))),
     );
 
@@ -41,7 +42,8 @@ export const layout = () => {
         register('item-submit', DIV({ 'class': 'btn btn--submit' }, TEXT('Create sticker'))),
     )
 
-    const commentForm = DETAILS({ 'class': 'comment-item' }, SUMMARY({}, TEXT('Comment the map')),
+    const commentForm = DIV({ 'class': 'comment-item' },
+        H2({}, TEXT('Comment a sticker')),
         DIV({ 'class': 'form' },
             DIV({ 'class': 'widget-desc' }, TEXT('Select a sticker on the map, and write a comment below')),
             registerT('text-input', TEXTAREA({ 'rows': '4' })),

@@ -184,6 +184,7 @@ export const LABEL = factory<HTMLLabelElement>('label');
 export const I = factory<HTMLLIElement>('i');
 
 export const H1 = factory<HTMLHeadingElement>('h1');
+export const H2 = factory<HTMLHeadingElement>('h2');
 
 export const BR = factory<HTMLElement>('br');
 
