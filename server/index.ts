@@ -108,7 +108,7 @@ const index =
 </head> 
 <body class='home'>
     <div class='header'>
-        <div class='header-title'>map-log</div>            
+        <div class='header-logo'>map-log</div>            
         <div class='header-links'>
             <a href='#'>documentation</a>
         </div>            

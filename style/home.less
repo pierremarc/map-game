@@ -5,9 +5,10 @@ body.home {
     justify-content: space-between;
 
     .main {
+        .neumorph();
         max-width: 600px;
         margin: 0 auto;
-        padding-bottom: 50px;
+        padding: @margin * 2;
         text-align: center;
 
         h1 {
@@ -22,7 +23,7 @@ body.home {
             text-align: left;
             display: flex;
             flex-wrap: wrap;
-            padding: @margin * 2 0;
+            margin-top: @margin;
 
             h2 {
                 width: 100%;
@@ -45,5 +46,9 @@ body.home {
             margin: 0;
             margin-bottom: @margin / 3;
         }
+    }
+    .footer {
+        padding-left: 0;
+        padding-right: 0;
     }
 }
