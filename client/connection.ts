@@ -49,6 +49,9 @@ export const connect =
         const ws = new WebSocket(checkScheme(config.websocket));
         const handlers: HandlerRec<MessageType>[] = [];
         let connected = false;
+        ws.onclose = (ev) => {
+            console.log(`[WS Closed] ${ev.code}: ${ev.reason}`)
+        }
         ws.onerror = err => console.error(err);
         ws.onmessage =
             (m) => {

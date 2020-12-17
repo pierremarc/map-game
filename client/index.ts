@@ -87,8 +87,8 @@ const start =
                     const x = (left + mapPos[0]) - (width / 2)
                     const y = (top + mapPos[1]) - (height / 2)
                     return [
-                        Math.min(Math.max(x, left), right),
-                        Math.min(Math.max(y, top), bottom),
+                        Math.min(Math.max(x, left - width), right),
+                        Math.min(Math.max(y, top), bottom - height),
                     ]
                 })()
                 style(elem, {
