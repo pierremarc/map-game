@@ -107,6 +107,34 @@
     }
 }
 
+.map-wrapper .item-wrapper.selected .item,
+.map-wrapper .d-item.selected .item {
+    animation-name: stretch;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-out;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+    animation-play-state: running;
+}
+
+.map-wrapper .delete span {
+    width: 15px;
+    height: 15px;
+    background: white;
+    border: 2px solid #000;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+
+    &:hover {
+        border-color: red;
+        background-color: red;
+        color: white;
+    }
+}
+
 .map-wrapper .item-wrapper {
     .item {
         margin: 0;
@@ -115,21 +143,6 @@
     }
     span {
         display: none;
-    }
-    &.selected {
-        // padding: 5px;
-        // border: 2px solid @blue;
-        // border-radius: 100%;
-        // margin-top: -7px;
-        // margin-left: -7px;
-        // position: absolute;
-        // z-index: 10;
-        animation-name: stretch;
-        animation-duration: 0.5s;
-        animation-timing-function: ease-out;
-        animation-direction: alternate;
-        animation-iteration-count: infinite;
-        animation-play-state: running;
     }
 }
 
