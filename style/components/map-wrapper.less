@@ -1,0 +1,118 @@
+.map-wrapper {
+    .neumorph();
+    position: relative !important;
+    padding: @margin;
+    border-radius: @margin * 2;
+    height: 100%;
+    width: 100%;
+    margin-bottom: @margin;
+    display: flex;
+    flex-direction: column;
+
+    > * {
+        flex: 1;
+    }
+
+    h1 {
+        flex-shrink: 0;
+        flex-grow: 0;
+        margin-bottom: @margin;
+    }
+
+    // .map {
+    //     position: relative;
+    // }
+}
+
+@keyframes stretch {
+    0% {
+        transform: scale(0.8);
+    }
+
+    100% {
+        transform: scale(1.2);
+    }
+}
+
+.map-wrapper .item-wrapper.selected .item,
+.map-wrapper .d-item.selected .item {
+    animation-name: stretch;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-out;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+    animation-play-state: running;
+}
+
+// DELETE STICKER BTN
+
+.map-wrapper .delete span {
+    width: 15px;
+    height: 15px;
+    background: white;
+    border: 2px solid #000;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+
+    &:hover {
+        border-color: red;
+        background-color: red;
+        color: white;
+    }
+}
+
+.map-wrapper .item-wrapper {
+    .item {
+        margin: 0;
+        padding: 0;
+        border: 0px;
+    }
+    span {
+        display: none;
+    }
+}
+
+// OVERRIDE OL STYLES
+
+.ol-viewport {
+    border-radius: @margin;
+    overflow: hidden;
+
+    .ol-zoom {
+        top: @margin;
+        left: initial;
+        right: @margin;
+
+        .ol-zoom-in {
+            margin-bottom: @margin / 2;
+        }
+    }
+    .ol-control {
+        position: absolute;
+        background-color: transparent;
+        border-radius: initial;
+        padding: initial;
+    }
+    .ol-control button {
+        display: block;
+        margin: initial;
+        padding: initial;
+        color: @black;
+        font-size: 1.5rem;
+        font-weight: initial;
+        text-decoration: none;
+        text-align: center;
+        height: 1.375em;
+        width: 1.375em;
+        line-height: initial;
+        background-color: @white;
+        border: 2px solid @black;
+        border-radius: 100%;
+    }
+    .ol-attribution {
+        display: none;
+    }
+}
