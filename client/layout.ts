@@ -16,12 +16,12 @@ export const layout = () => {
 
     const header = DIV({ class: 'header' },
         DIV({ 'class': 'header-logo' }, A({ href: '/' }, TEXT('map-log'))),
-        mapTitle,
         headerLinks
     )
 
 
     const map = DIV({ 'class': 'map-wrapper' },
+        mapTitle,
         register('map', DIV({ id: 'map', 'class': 'map' })));
 
     const items = DIV({ 'class': 'items' },
