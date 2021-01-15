@@ -15,7 +15,7 @@ const ensureDir =
     (path: string) =>
         resolve(path).split(sep).slice(1).reduce((acc, d) => {
             const dirPath = join(acc, d);
-            console.log(`ensureDir ${dirPath}`);
+            // console.log(`ensureDir ${dirPath}`);
             if (!existsSync(dirPath)) {
                 mkdirSync(dirPath);
             }
@@ -109,10 +109,9 @@ const readLog =
             readFileSync(path, { encoding: 'utf-8' })
                 .split('\n')
                 .map(l => {
-                    console.log(l);
                     try { return JSON.parse(l); }
                     catch (_err) {
-                        console.error(`Failed to parse [${l}]`)
+                        // console.error(`Failed to parse [${l}]`)
                         return {};
                     }
                 })
@@ -132,6 +131,7 @@ export const initLogFile =
         ensureDir(rootDir);
         const path = resolve(rootDir, name);
         const records = readLog(path);
+        console.log(`initLog(${path}) -> ${records.length}`)
         let op: Task<void> = new Task(() => Promise.resolve());
 
         const tell = () => records.slice(0);
