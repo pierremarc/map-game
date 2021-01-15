@@ -6,7 +6,7 @@ const charMap = JSON.parse('{"$":"dollar","&":"and","<":"less",">":"greater","|"
 export interface SlugifyOptions {
   replacement?: string;
   remove?: RegExp;
-  lower?: boolean;
+  // lower?: boolean;
 }
 
 export default function replace(string: string, options: SlugifyOptions = {}) {
@@ -28,5 +28,5 @@ export default function replace(string: string, options: SlugifyOptions = {}) {
     // remove trailing separator
     .replace('#{replacement}$', '')
 
-  return options.lower ? string.toLowerCase() : string
+  return string.toLowerCase()
 }
