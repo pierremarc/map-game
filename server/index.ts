@@ -126,7 +126,7 @@ const index =
     
 
     <div class='footer'>
-            <span>Beta Version - Developped in Brussels by 
+            <span>Alpha Version - Developped in Brussels by 
             <a href='https://atelier-cartographique.be'>atelier cartographique</a>
             - Basemap ©
             <a href='https://www.openstreetmap.org/copyright/en'>OpenStreetMap Contributors</a>

@@ -32,14 +32,36 @@ export const layout = () => {
         register('items', DIV({ 'class': 'item-list' }, register('deselect', DIV({ 'class': 'deselect', 'title': 'deselect' }, TEXT('+'))))),
     );
 
-    const itemForm = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Create a new sticker')),
-        DIV({ 'class': 'widget-title' }, TEXT('Upload an image that will be used as a sticker (.jpg or .png).')),
-        DIV({ 'class': 'create-step' }, TEXT('1')),
-        registerT('item-file', INPUT({ 'type': 'file' })),
-        DIV({ 'class': 'create-step' }, TEXT('2')),
-        registerT('item-name', INPUT({ 'type': 'text', 'placeholder': 'give it a name' })),
-        DIV({ 'class': 'create-step' }, TEXT('3')),
-        register('item-submit', DIV({ 'class': 'btn btn--submit' }, TEXT('Create sticker'))),
+    const itemForm = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Add a new sticker')),
+        DIV({ 'class': 'widget-title' },
+            TEXT('Upload an image that will be used as a sticker (.jpg or .png).'),
+            ),
+        DIV({ 'class': 'widget-title' },
+            TEXT('Need pictos ? '),
+            A({ 'href': 'https://atelier-cartographique.be/storage/pictos/picto-list.html', 'target':'_blank' }, TEXT('Click here.'))),
+        DIV({ 'class': 'create-step' }, 
+            DIV({ 'class': 'create-step__number' }, TEXT('1')),
+            registerT('item-file', INPUT({ 'type': 'file' })),
+        ),
+        DIV({ 'class': 'create-step' }, 
+            DIV({ 'class': 'create-step__number' }, TEXT('2')),
+            registerT('item-name', INPUT({ 'type': 'text', 'placeholder': 'give it a name' })),
+        ),
+        DIV({ 'class': 'create-step' }, 
+            DIV({ 'class': 'create-step__number' }, TEXT('3')),
+            register('item-submit', DIV({ 'class': 'btn btn--submit' }, TEXT('Create sticker'))),
+        ),
+    )
+
+    const feedback = DIV({ 'class': 'feedback' },
+        TEXT('Do you need help ? '),
+        TEXT('Willing to contribute or give a feedback ?'),
+        TEXT('Your map has to be cleaned-up ? '),
+        TEXT('Or you want it being connected to '),
+        A({ 'href': 'https://cartofixer.be/', 'target': '_blank' }, TEXT('cartofixer')),
+        TEXT(' ? '),
+        TEXT('Please '),
+        A({ 'href': 'https://atelier-cartographique.be/en/contact.html', 'target': '_blank' }, TEXT('contact us.'))
     )
 
     const commentForm = DIV({ 'class': 'comment-item' },
@@ -67,6 +89,7 @@ export const layout = () => {
     const itemsWrapper = DIV({ 'class': 'items-wrapper' },
         items,
         itemForm,
+        feedback,
     )
 
     const main = DIV({ 'class': 'main' },
