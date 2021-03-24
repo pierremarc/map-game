@@ -34,7 +34,7 @@ export const layout = () => {
 
     const itemForm = DETAILS({ 'class': 'create-item' }, SUMMARY({}, TEXT('Add a new sticker')),
         DIV({ 'class': 'widget-title' },
-            TEXT('Upload an image that will be used as a sticker (.jpg or .png).'),
+            TEXT('Upload an image that will be used as a sticker (.jpg , .png, .svg).'),
             ),
         DIV({ 'class': 'widget-title' },
             TEXT('Need pictos ? '),
